@@ -14,7 +14,7 @@ window.COHUB_CONFIG = {
       { name: "Minwoo Park", affiliations: [1], notes: ["equal"], url: "https://minwoopark00.github.io/" }
     ],
     [
-      { name: "Sunghyun Park", affiliations: [1] },
+      { name: "Sunghyun Park", affiliations: [1], url: "https://edipark.github.io/" },
       { name: "Hanjun Yoo", affiliations: [2], url: "https://lukehanjun.github.io/Portfolio/" },
       { name: "Seoyeon Choi", affiliations: [3], url: "https://n00nspr1ng.github.io/" },
       { name: "Soochul Yoo", affiliations: [1] },
