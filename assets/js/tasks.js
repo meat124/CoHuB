@@ -231,11 +231,17 @@
       const name = el("button", { type: "button", class: "link-btn", style: "padding:0;font:650 17px/1.2 var(--font-mono);color:var(--ink)" }, [t.name, icon("arrow")]);
       name.addEventListener("click", () => openTask(t.id));
       if (copy) name.tabIndex = -1;
-      return el("article", { class: "fail-card", "aria-hidden": copy ? "true" : null }, [
-        el("div", { class: "fail-card__frames" }, ["a", "b"].map((side, i) => el("figure", null, [
+      const media = (D.failureVideos || []).includes(t.id)
+        ? el("div", { class: "fail-card__video" }, makeVideo({
+          src: `assets/video/failures/${t.id}.mp4`, poster: `assets/img/failures/${t.id}-poster.webp`,
+          label: copy ? null : `${t.name} failure rollout video`
+        }))
+        : el("div", { class: "fail-card__frames" }, ["a", "b"].map((side, i) => el("figure", null, [
           el("img", { src: `assets/img/failures/${t.id}-${side}.webp`, alt: copy ? "" : `${t.name} failure, ${i === 0 ? "earlier" : "later"} moment`, loading: "lazy", width: "800", height: "600" }),
           el("figcaption", { text: i === 0 ? "Earlier" : "Later" })
-        ]))),
+        ])));
+      return el("article", { class: "fail-card", "aria-hidden": copy ? "true" : null }, [
+        media,
         el("div", { class: "fail-card__body" }, [el("div", { class: "fail-card__name" }, name), el("p", { class: "fail-card__text", text: D.failures[t.id] })])
       ]);
     };

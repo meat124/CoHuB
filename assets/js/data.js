@@ -273,6 +273,11 @@ window.COHUB_DATA = {
     ]
   },
 
+  // Figure 5 tasks that have a full-rollout video (assets/video/failures/<id>.mp4, re-rendered
+  // from the logged simulator state); the rest still show the two paper stills.
+  failureVideos: ["handover", "pouring", "framehang", "copouring", "trashcollection",
+    "cartservice", "cocarry", "tablealign", "movehouse", "bigtable"],
+
   // Figure 5 (GR00T N1.7 rollouts), captions verbatim from the paper.
   failures: {
     handover: "The giver lets go before the receiver’s hand closes on the bottle, which drops between the two hands.",

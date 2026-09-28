@@ -924,7 +924,8 @@ sub { line-height: 0; }
 
 /* ---------- Failure carousel ---------- */
 .carousel__track {
-  display: grid; grid-auto-flow: column; grid-auto-columns: min(560px, 86%);
+  /* two cards side by side fill the row exactly (100% minus the one 20px gap, halved) */
+  display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 20px) / 2);
   gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
   padding: 2px 2px 10px; scrollbar-width: none;
 }
@@ -937,6 +938,7 @@ sub { line-height: 0; }
   position: absolute; left: 8px; top: 8px; font: 650 11.5px/1 var(--font-mono); color: #fff;
   background: rgba(8, 12, 11, 0.6); padding: 5px 8px; border-radius: 6px;
 }
+.fail-card__video video { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--tile-bg); }
 .fail-card__body { padding: 18px 20px 20px; }
 .fail-card__name { margin-bottom: 8px; }
 .fail-card__text { font-size: 16px; color: var(--ink-2); line-height: 1.5; }
@@ -1066,6 +1068,7 @@ sub { line-height: 0; }
 }
 
 @media (max-width: 700px) {
+  .carousel__track { grid-auto-columns: 86%; }
   body { font-size: 17px; }
   .hero { height: auto; min-height: 0; }
   .hero-grid { position: relative; grid-template-rows: auto; }
