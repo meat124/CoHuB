@@ -261,6 +261,8 @@ sub { line-height: 0; }
 }
 .hero-intro .hero { background: #0b0f0e; }
 .hero-intro .hero-row > .tile { opacity: 0; transform: scale(1.07); }
+/* The opening task shrinks to its cell's measured box, so that cell must not be scaled. */
+.hero-intro .hero-row > .tile--placeholder { transform: none; }
 .hero-intro .hero-progress { opacity: 1; }
 /* The title card, tile labels and the scroll cue appear only once all ten tasks are in. */
 .hero-intro .hero-card, .hero-assembling .hero-card { opacity: 0; transform: translate(-50%, -50%) scale(0.86); pointer-events: none; }
