@@ -240,13 +240,6 @@ sub { line-height: 0; }
   padding-top: clamp(6px, 1vh, 10px); border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
-.hero-links {
-  position: absolute; top: 14px; right: 14px; z-index: 5;
-  display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
-}
-.hero-links:empty { display: none; }
-.hero-links .btn { background: rgba(12, 16, 16, 0.72); color: #fff; backdrop-filter: blur(8px); }
-
 .hero-scroll {
   /* Sits on the boundary between the middle row and the bottom row, clear of tile labels. */
   position: absolute; z-index: 5; left: 50%; top: calc(2.7 / 3.7 * 100% - 20px);
@@ -1093,8 +1086,6 @@ sub { line-height: 0; }
   .hero-row--bottom { order: 4; }
   .hero-card__facts { display: block; }
   .hero-scroll { display: none; }
-  .hero-links { position: static; order: 0; justify-content: center; padding: 12px 16px 0; }
-  .hero-links .btn { background: var(--ink); color: var(--bg); }
   .br-wide { display: none; }
   .quad__cards, .trio__cards { grid-template-columns: minmax(0, 1fr); }
   .kpis, .families { grid-template-columns: minmax(0, 1fr); }

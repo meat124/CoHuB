@@ -46,8 +46,7 @@ window.COHUB_CONFIG = {
 
   // Empty string = not available yet. Missing links render as a disabled
   // "soon" button (or are hidden when showComingSoon is false).
-  // `where`: "title" = buttons under the title (and top-right of the hero when
-  // available), "data" = buttons in the dataset section.
+  // `where`: "title" = buttons under the title, "data" = buttons in the dataset section.
   links: [
     { id: "paper", label: "Paper", icon: "paper", url: "https://arxiv.org/pdf/2609.34782", where: "title" },
     { id: "arxiv", label: "arXiv", icon: "arxiv", url: "https://arxiv.org/abs/2609.34782", where: "title" },

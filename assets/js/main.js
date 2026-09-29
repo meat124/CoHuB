@@ -322,12 +322,10 @@
 
     const titleRow = $('[data-links="title"]');
     const dataRow = $('[data-links="data"]');
-    const heroRow = $("[data-hero-links]");
     for (const link of C.links) {
       const ok = Boolean(link.url);
       const row = link.where === "data" ? dataRow : titleRow;
       if (ok || C.showComingSoon) row.append(linkButton(link, ok));
-      if (ok && link.where !== "data") heroRow.append(linkButton(link, true));
     }
     // An empty BibTeX (before arXiv) shows "soon" instead of an entry.
     const bib = C.bibtex;
