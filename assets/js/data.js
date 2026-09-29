@@ -1,7 +1,7 @@
 /*
- * Benchmark content, transcribed from the paper.
- * Tables 2, 3, 5, 6, 7, 11, 12, 13 and Figures 4, 5. Every chart and table on the
- * page is rendered from this file, so a number fixed here is fixed everywhere.
+ * Benchmark content, transcribed from the paper (arXiv:2609.34782): Tables 2, 3,
+ * 5, 6, 7, 9-13 and Figures 4, 8. Every chart and table on the page is rendered
+ * from this file, so a number fixed here is fixed everywhere.
  */
 window.COHUB_DATA = {
   // Task order follows Table 2. `collab` marks the collaborative phases of
@@ -161,7 +161,7 @@ window.COHUB_DATA = {
       randomization: "Table: x, y ∈ [−0.05, 0.05]; door initially closed and latched.",
       episode: 29,
       phases: [
-        { name: "Lift and open", collab: null, cond: "B and C jointly lift every table foot at least 3 cm off the floor; A opens the door to at least 1.45 rad (≈ 83°) for 0.5 s. These two milestones may occur in either order." },
+        { name: "Lift and open", collab: null, cond: "B and C jointly lift every table foot at least 3 cm off the floor, and A opens the door to at least 1.45 rad (≈ 83°) for 0.5 s. These two milestones may occur in either order." },
         { name: "Pass doorway", collab: null, cond: "Table and both carriers pass the doorway clearance plane together, with B and C holding and the feet off the floor." },
         { name: "Place", collab: null, cond: "B and C carry the table within 15 cm of the goal while holding it aloft, then release it stably with each foot within its 10 cm-square mark and height within ±4 cm of standing height." }
       ],
@@ -273,12 +273,12 @@ window.COHUB_DATA = {
     ]
   },
 
-  // Figure 5 tasks that have a full-rollout video (assets/video/failures/<id>.mp4, re-rendered
+  // Figure 8 tasks that have a full-rollout video (assets/video/failures/<id>.mp4, re-rendered
   // from the logged simulator state); the rest still show the two paper stills.
   failureVideos: ["handover", "pouring", "framehang", "copouring", "trashcollection",
     "cartservice", "cocarry", "tablealign", "movehouse", "bigtable"],
 
-  // Figure 5 (GR00T N1.7 rollouts), captions verbatim from the paper.
+  // Figure 8 (GR00T N1.7 rollouts), captions verbatim from the paper.
   failures: {
     handover: "The giver lets go before the receiver’s hand closes on the bottle, which drops between the two hands.",
     pouring: "The cup is tipped while the partner’s glass is not beneath it, so the marble misses the glass.",

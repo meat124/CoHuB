@@ -49,8 +49,8 @@ window.COHUB_CONFIG = {
   // `where`: "title" = buttons under the title (and top-right of the hero when
   // available), "data" = buttons in the dataset section.
   links: [
-    { id: "paper", label: "Paper", icon: "paper", url: "", where: "title" },
-    { id: "arxiv", label: "arXiv", icon: "arxiv", url: "", where: "title" },
+    { id: "paper", label: "Paper", icon: "paper", url: "https://arxiv.org/pdf/2609.34782", where: "title" },
+    { id: "arxiv", label: "arXiv", icon: "arxiv", url: "https://arxiv.org/abs/2609.34782", where: "title" },
     { id: "code", label: "Code", icon: "code", url: "", where: "title" },
     { id: "dataset", label: "Dataset", icon: "data", url: "", where: "title" },
     { id: "data2", label: "Dataset · 2 humanoids", icon: "data", url: "", where: "data" },
@@ -58,9 +58,18 @@ window.COHUB_CONFIG = {
   ],
   showComingSoon: true,
 
-  // Empty until the paper is on arXiv: the BibTeX button and the Citation
-  // section then show "soon".
-  bibtex: "",
+  // An empty string shows "soon" for the BibTeX button and the Citation section.
+  bibtex: [
+    "@article{park2026cohub,",
+    "  title   = {{CoHuB}: A Simulation Benchmark for Multi-Humanoid Collaboration},",
+    "  author  = {Park, Hyunjin and Chae, Jebeom and Park, Minwoo and Park, Sunghyun and",
+    "             Yoo, Hanjun and Choi, Seoyeon and Yoo, Soochul and Seo, Joohwan and",
+    "             Idrees, Sarmad and Hyun, Jae-Sang and Lee, Jongmin and Horowitz, Roberto and",
+    "             Lee, Youngwoon and Choi, Jongeun},",
+    "  journal = {arXiv preprint arXiv:2609.34782},",
+    "  year    = {2026}",
+    "}"
+  ].join("\n"),
 
   // Optional acknowledgements paragraph.
   acknowledgements: ""

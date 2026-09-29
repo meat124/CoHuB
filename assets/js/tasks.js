@@ -222,7 +222,7 @@
     show("handover");
   }
 
-  /* ---------- Failure carousel (Figure 5) ---------- */
+  /* ---------- Failure carousel (Figure 8) ---------- */
   // Endless: the ten cards sit between two copies of themselves, and whenever the
   // scroll settles inside a copy it jumps by one set width to the same card in the middle.
   function renderFailures(root) {
