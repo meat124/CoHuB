@@ -1,0 +1,1153 @@
+#usda 1.0
+(
+    defaultPrim = "ServiceCart"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "ServiceCart" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+)
+{
+    bool physics:kinematicEnabled = 0
+    float physics:mass = 12
+    bool physics:rigidBodyEnabled = 1
+
+    def Scope "Looks"
+    {
+        def Material "SteelMaterial"
+        {
+            token outputs:surface.connect = </ServiceCart/Looks/SteelMaterial/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.62, 0.64, 0.66)
+                float inputs:metallic = 1
+                float inputs:roughness = 0.3
+                token outputs:surface
+            }
+        }
+
+        def Material "TimberMaterial"
+        {
+            token outputs:surface.connect = </ServiceCart/Looks/TimberMaterial/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.2, 0.12, 0.07)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
+
+        def Material "RubberMaterial"
+        {
+            token outputs:surface.connect = </ServiceCart/Looks/RubberMaterial/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.1, 0.1, 0.11)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.85
+                token outputs:surface
+            }
+        }
+
+        def Material "GripPhysics" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 1
+            float physics:restitution = 0
+            float physics:staticFriction = 1
+        }
+
+        def Material "CasterPhysics" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.05
+            float physics:restitution = 0
+            float physics:staticFriction = 0.05
+            custom token physxMaterial:frictionCombineMode = "min"
+        }
+    }
+
+    def Sphere "Foot_aa" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.038, -0.038, -0.038), (0.038, 0.038, 0.038)]
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/CasterPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.038
+        double3 xformOp:translate = (-0.227, -0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cylinder "Caster_aa" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        uniform token axis = "Y"
+        float3[] extent = [(-0.038, -0.012, -0.038), (0.038, 0.012, 0.038)]
+        double height = 0.024
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        double radius = 0.038
+        double3 xformOp:translate = (-0.227, -0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "CasterBracket_aa" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float3 xformOp:scale = (0.042, 0.03, 0.05)
+        double3 xformOp:translate = (-0.227, -0.377, 0.056999999999999995)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Sphere "Foot_ab" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.038, -0.038, -0.038), (0.038, 0.038, 0.038)]
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/CasterPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.038
+        double3 xformOp:translate = (-0.227, 0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cylinder "Caster_ab" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        uniform token axis = "Y"
+        float3[] extent = [(-0.038, -0.012, -0.038), (0.038, 0.012, 0.038)]
+        double height = 0.024
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        double radius = 0.038
+        double3 xformOp:translate = (-0.227, 0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "CasterBracket_ab" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float3 xformOp:scale = (0.042, 0.03, 0.05)
+        double3 xformOp:translate = (-0.227, 0.377, 0.056999999999999995)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Sphere "Foot_ba" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.038, -0.038, -0.038), (0.038, 0.038, 0.038)]
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/CasterPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.038
+        double3 xformOp:translate = (0.227, -0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cylinder "Caster_ba" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        uniform token axis = "Y"
+        float3[] extent = [(-0.038, -0.012, -0.038), (0.038, 0.012, 0.038)]
+        double height = 0.024
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        double radius = 0.038
+        double3 xformOp:translate = (0.227, -0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "CasterBracket_ba" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float3 xformOp:scale = (0.042, 0.03, 0.05)
+        double3 xformOp:translate = (0.227, -0.377, 0.056999999999999995)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Sphere "Foot_bb" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.038, -0.038, -0.038), (0.038, 0.038, 0.038)]
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/CasterPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.038
+        double3 xformOp:translate = (0.227, 0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cylinder "Caster_bb" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        uniform token axis = "Y"
+        float3[] extent = [(-0.038, -0.012, -0.038), (0.038, 0.012, 0.038)]
+        double height = 0.024
+        rel material:binding = </ServiceCart/Looks/RubberMaterial>
+        double radius = 0.038
+        double3 xformOp:translate = (0.227, 0.377, 0.038)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "CasterBracket_bb" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float3 xformOp:scale = (0.042, 0.03, 0.05)
+        double3 xformOp:translate = (0.227, 0.377, 0.056999999999999995)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_aa" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.03, 0.03, 0.656)
+        double3 xformOp:translate = (-0.25, -0.4, 0.40399999999999997)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_ab" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.03, 0.03, 0.804)
+        double3 xformOp:translate = (-0.25, 0.4, 0.478)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_ba" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.03, 0.03, 0.656)
+        double3 xformOp:translate = (0.25, -0.4, 0.40399999999999997)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_bb" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.03, 0.03, 0.804)
+        double3 xformOp:translate = (0.25, 0.4, 0.478)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Shelf" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/TimberMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.55, 0.85, 0.018)
+        double3 xformOp:translate = (0, 0, 0.311)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Deck" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/TimberMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.55, 0.85, 0.018)
+        double3 xformOp:translate = (0, 0, 0.741)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "RimLong_a" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.55, 0.01, 0.014)
+        double3 xformOp:translate = (0, -0.42, 0.757)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "RimLong_b" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.55, 0.01, 0.014)
+        double3 xformOp:translate = (0, 0.42, 0.757)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "RimShort_a" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.01, 0.83, 0.014)
+        double3 xformOp:translate = (-0.27, 0, 0.757)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "RimShort_b" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.01, 0.83, 0.014)
+        double3 xformOp:translate = (0.27, 0, 0.757)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Capsule "PushBar" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "X"
+        float3[] extent = [(-0.265, -0.014, -0.014), (0.265, 0.014, 0.014)]
+        double height = 0.502
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.014
+        double3 xformOp:translate = (0, 0.4, 0.88)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "Base_00" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.20550000000000002, -0.29, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Base_01" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 22.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.2005141093794893, -0.2649342351800866, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_02" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 45
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.18631549416771886, -0.24368450583228113, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_03" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 67.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.1650657648199134, -0.2294858906205107, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_04" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 90
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.14, -0.22449999999999998, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_05" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 112.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.11493423518008664, -0.2294858906205107, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_06" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 135
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.09368450583228116, -0.24368450583228113, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_07" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 157.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.07948589062051073, -0.2649342351800866, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_08" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 180
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.07450000000000001, -0.29, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_09" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 202.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.07948589062051073, -0.31506576481991333, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_10" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 225
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.09368450583228113, -0.33631549416771883, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_11" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 247.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.1149342351800866, -0.35051410937948924, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_12" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 270
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.14, -0.3555, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_13" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 292.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.16506576481991342, -0.35051410937948924, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_14" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 315
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.18631549416771886, -0.33631549416771883, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Base_15" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 337.5
+        float3 xformOp:scale = (0.029, 0.02605752, 0.006)
+        double3 xformOp:translate = (0.20051410937948927, -0.3150657648199134, 0.753)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_00" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.2015, -0.29, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Collar_01" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 22.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.19681859124944415, -0.26646496890954696, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_02" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 45
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.18348706704297268, -0.2465129329570273, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_03" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 67.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.16353503109045303, -0.23318140875055585, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_04" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 90
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.14, -0.22849999999999998, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_05" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 112.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.116464968909547, -0.23318140875055585, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_06" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 135
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.09651293295702734, -0.2465129329570273, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_07" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 157.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.08318140875055588, -0.26646496890954696, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_08" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 180
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.07850000000000001, -0.29, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_09" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 202.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.08318140875055588, -0.313535031090453, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_10" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 225
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.09651293295702733, -0.33348706704297265, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_11" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 247.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.11646496890954695, -0.3468185912494441, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_12" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 270
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.14, -0.3515, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_13" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 292.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.16353503109045306, -0.3468185912494441, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_14" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 315
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.18348706704297268, -0.33348706704297265, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Collar_15" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float xformOp:rotateZ = 337.5
+        float3 xformOp:scale = (0.021, 0.02446622, 0.016)
+        double3 xformOp:translate = (0.19681859124944412, -0.31353503109045305, 0.8180000000000001)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_00" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.20600000000000002, -0.29, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Flare_01" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 22.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.20097604914574493, -0.26474289346390406, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_02" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 45
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.18666904755831215, -0.24333095244168784, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_03" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 67.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.16525710653609593, -0.22902395085425506, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_04" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 90
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.14, -0.22399999999999998, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_05" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 112.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.1147428934639041, -0.22902395085425506, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_06" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 135
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.09333095244168788, -0.24333095244168784, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_07" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 157.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.07902395085425509, -0.26474289346390406, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_08" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 180
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.07400000000000001, -0.29, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_09" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 202.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.07902395085425508, -0.3152571065360959, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_10" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 225
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.09333095244168786, -0.3366690475583121, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_11" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 247.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.11474289346390405, -0.3509760491457449, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_12" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 270
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.14, -0.356, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_13" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 292.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.16525710653609596, -0.3509760491457449, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_14" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 315
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.18666904755831215, -0.3366690475583121, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cube "Flare_15" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        double size = 1
+        float xformOp:rotateZ = 337.5
+        float3 xformOp:scale = (0.012, 0.026256433, 0.007)
+        double3 xformOp:translate = (0.20097604914574493, -0.31525710653609595, 0.8294999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+    }
+
+    def Cylinder "Rod_0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        float3[] extent = [(-0.005, -0.005, -0.03), (0.005, 0.005, 0.03)]
+        double height = 0.06
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.005
+        double3 xformOp:translate = (0.14, -0.22849999999999998, 0.78)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cylinder "Rod_1" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        float3[] extent = [(-0.005, -0.005, -0.03), (0.005, 0.005, 0.03)]
+        double height = 0.06
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.005
+        double3 xformOp:translate = (0.08673943766725704, -0.32075, 0.78)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cylinder "Rod_2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        float3[] extent = [(-0.005, -0.005, -0.03), (0.005, 0.005, 0.03)]
+        double height = 0.06
+        rel material:binding = </ServiceCart/Looks/SteelMaterial>
+        rel material:binding:physics = </ServiceCart/Looks/GripPhysics> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        bool physics:collisionEnabled = 1
+        double radius = 0.005
+        double3 xformOp:translate = (0.19326056233274297, -0.32075, 0.78)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+}
+

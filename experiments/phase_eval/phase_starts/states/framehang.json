@@ -1,0 +1,997 @@
+{
+  "schema": 2,
+  "task": "framehang",
+  "gym_id": "Isaac-FrameHang-G1x2-v0",
+  "chain": [
+    "grasp",
+    "lift",
+    "hang"
+  ],
+  "details": [
+    "hook"
+  ],
+  "collaborative": {
+    "grasp": false,
+    "lift": true,
+    "hang": true
+  },
+  "checks_key": "framehang_success",
+  "step_dt": 0.02,
+  "budgets": {
+    "grasp": 200,
+    "lift": 150,
+    "hang": 500
+  },
+  "phase_length_max": {
+    "grasp": 88,
+    "lift": 58,
+    "hang": 226
+  },
+  "lived_slack": 100,
+  "lived_trials": {
+    "grasp": 50,
+    "lift": 50,
+    "hang": 49
+  },
+  "source": {
+    "split": "train",
+    "demos": 50,
+    "frames": 13616,
+    "mhbench_sha": "f47fa31f3f92a32e076dc850b0cbcd781d372317",
+    "shards_match_export": "exact",
+    "unreproduced_success": [],
+    "export_revision": "a2bef2aea1355f5d2205adca98e0c14252994917"
+  },
+  "demos": [
+    {
+      "episode_index": 0,
+      "demo": "demo_0",
+      "T": 321,
+      "achieved": {
+        "grasp": 67,
+        "lift": 119
+      },
+      "lived": {
+        "grasp": 67,
+        "lift": 122
+      },
+      "details": {
+        "hook": 216
+      },
+      "env_success_frame": 311,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 1,
+      "demo": "demo_1",
+      "T": 276,
+      "achieved": {
+        "grasp": 78,
+        "lift": 118
+      },
+      "lived": {
+        "grasp": 78,
+        "lift": 121
+      },
+      "details": {
+        "hook": 191
+      },
+      "env_success_frame": 266,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 2,
+      "demo": "demo_2",
+      "T": 264,
+      "achieved": {
+        "grasp": 76,
+        "lift": 127
+      },
+      "lived": {
+        "grasp": 76,
+        "lift": 124
+      },
+      "details": {
+        "hook": 179
+      },
+      "env_success_frame": 254,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 3,
+      "demo": "demo_3",
+      "T": 240,
+      "achieved": {
+        "grasp": 70,
+        "lift": 104
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 113
+      },
+      "details": {
+        "hook": 168
+      },
+      "env_success_frame": 230,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 4,
+      "demo": "demo_4",
+      "T": 230,
+      "achieved": {
+        "grasp": 64,
+        "lift": 104
+      },
+      "lived": {
+        "grasp": 64,
+        "lift": 108
+      },
+      "details": {
+        "hook": 154
+      },
+      "env_success_frame": 220,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 5,
+      "demo": "demo_5",
+      "T": 250,
+      "achieved": {
+        "grasp": 54,
+        "lift": 97
+      },
+      "lived": {
+        "grasp": 57,
+        "lift": 103
+      },
+      "details": {
+        "hook": 168
+      },
+      "env_success_frame": 240,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 6,
+      "demo": "demo_6",
+      "T": 268,
+      "achieved": {
+        "grasp": 59,
+        "lift": 108
+      },
+      "lived": {
+        "grasp": 63,
+        "lift": 112
+      },
+      "details": {
+        "hook": 195
+      },
+      "env_success_frame": 258,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 7,
+      "demo": "demo_7",
+      "T": 232,
+      "achieved": {
+        "grasp": 70,
+        "lift": 115
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 120
+      },
+      "details": {
+        "hook": 166
+      },
+      "env_success_frame": 222,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 8,
+      "demo": "demo_8",
+      "T": 300,
+      "achieved": {
+        "grasp": 60,
+        "lift": 106
+      },
+      "lived": {
+        "grasp": 62,
+        "lift": 110
+      },
+      "details": {
+        "hook": 208
+      },
+      "env_success_frame": 290,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 9,
+      "demo": "demo_9",
+      "T": 266,
+      "achieved": {
+        "grasp": 70,
+        "lift": 121
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 125
+      },
+      "details": {
+        "hook": 178
+      },
+      "env_success_frame": 256,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 10,
+      "demo": "demo_10",
+      "T": 327,
+      "achieved": {
+        "grasp": 68,
+        "lift": 118
+      },
+      "lived": {
+        "grasp": 69,
+        "lift": 122
+      },
+      "details": {
+        "hook": 202
+      },
+      "env_success_frame": 317,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 11,
+      "demo": "demo_11",
+      "T": 271,
+      "achieved": {
+        "grasp": 60,
+        "lift": 105
+      },
+      "lived": {
+        "grasp": 61,
+        "lift": 111
+      },
+      "details": {
+        "hook": 179
+      },
+      "env_success_frame": 261,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 12,
+      "demo": "demo_12",
+      "T": 248,
+      "achieved": {
+        "grasp": 87,
+        "lift": 131
+      },
+      "lived": {
+        "grasp": 84,
+        "lift": 136
+      },
+      "details": {
+        "hook": 176
+      },
+      "env_success_frame": 238,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 13,
+      "demo": "demo_13",
+      "T": 302,
+      "achieved": {
+        "grasp": 55,
+        "lift": 113
+      },
+      "lived": {
+        "grasp": 60,
+        "lift": 118
+      },
+      "details": {
+        "hook": 202
+      },
+      "env_success_frame": 278,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 14,
+      "demo": "demo_14",
+      "T": 270,
+      "achieved": {
+        "grasp": 73,
+        "lift": 107
+      },
+      "lived": {
+        "grasp": 73,
+        "lift": 111
+      },
+      "details": {
+        "hook": 195
+      },
+      "env_success_frame": 260,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 15,
+      "demo": "demo_15",
+      "T": 277,
+      "achieved": {
+        "grasp": 59,
+        "lift": 97
+      },
+      "lived": {
+        "grasp": 58,
+        "lift": 101
+      },
+      "details": {
+        "hook": 182
+      },
+      "env_success_frame": 267,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 16,
+      "demo": "demo_16",
+      "T": 267,
+      "achieved": {
+        "grasp": 71,
+        "lift": 106
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 110
+      },
+      "details": {
+        "hook": 175
+      },
+      "env_success_frame": 257,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 17,
+      "demo": "demo_17",
+      "T": 267,
+      "achieved": {
+        "grasp": 64,
+        "lift": 109
+      },
+      "lived": {
+        "grasp": 63,
+        "lift": 114
+      },
+      "details": {
+        "hook": 197
+      },
+      "env_success_frame": 257,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 18,
+      "demo": "demo_18",
+      "T": 247,
+      "achieved": {
+        "grasp": 70,
+        "lift": 108
+      },
+      "lived": {
+        "grasp": 70,
+        "lift": 113
+      },
+      "details": {
+        "hook": 169
+      },
+      "env_success_frame": 237,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 19,
+      "demo": "demo_19",
+      "T": 232,
+      "achieved": {
+        "grasp": 71,
+        "lift": 102
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 106
+      },
+      "details": {
+        "hook": 160
+      },
+      "env_success_frame": 222,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 20,
+      "demo": "demo_20",
+      "T": 284,
+      "achieved": {
+        "grasp": 71,
+        "lift": 117
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 121
+      },
+      "details": {
+        "hook": 188
+      },
+      "env_success_frame": 274,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 21,
+      "demo": "demo_21",
+      "T": 240,
+      "achieved": {
+        "grasp": 71,
+        "lift": 117
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 120
+      },
+      "details": {
+        "hook": 159
+      },
+      "env_success_frame": 230,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 22,
+      "demo": "demo_22",
+      "T": 308,
+      "achieved": {
+        "grasp": 66,
+        "lift": 110
+      },
+      "lived": {
+        "grasp": 66,
+        "lift": 113
+      },
+      "details": {
+        "hook": 172
+      },
+      "env_success_frame": 288,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 23,
+      "demo": "demo_23",
+      "T": 302,
+      "achieved": {
+        "grasp": 66,
+        "lift": 107
+      },
+      "lived": {
+        "grasp": 65,
+        "lift": 111
+      },
+      "details": {
+        "hook": 213
+      },
+      "env_success_frame": 292,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 24,
+      "demo": "demo_24",
+      "T": 265,
+      "achieved": {
+        "grasp": 60,
+        "lift": 104
+      },
+      "lived": {
+        "grasp": 60,
+        "lift": 108
+      },
+      "details": {
+        "hook": 186
+      },
+      "env_success_frame": 255,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 25,
+      "demo": "demo_25",
+      "T": 249,
+      "achieved": {
+        "grasp": 59,
+        "lift": 99
+      },
+      "lived": {
+        "grasp": 60,
+        "lift": 104
+      },
+      "details": {
+        "hook": 159
+      },
+      "env_success_frame": 227,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 26,
+      "demo": "demo_26",
+      "T": 289,
+      "achieved": {
+        "grasp": 59,
+        "lift": 103
+      },
+      "lived": {
+        "grasp": 61,
+        "lift": 108
+      },
+      "details": {
+        "hook": 202
+      },
+      "env_success_frame": 279,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 27,
+      "demo": "demo_27",
+      "T": 287,
+      "achieved": {
+        "grasp": 61,
+        "lift": 109
+      },
+      "lived": {
+        "grasp": 62,
+        "lift": 113
+      },
+      "details": {
+        "hook": 210
+      },
+      "env_success_frame": 277,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 28,
+      "demo": "demo_28",
+      "T": 265,
+      "achieved": {
+        "grasp": 64,
+        "lift": 107
+      },
+      "lived": {
+        "grasp": 64,
+        "lift": 110
+      },
+      "details": {
+        "hook": 180
+      },
+      "env_success_frame": 255,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 29,
+      "demo": "demo_29",
+      "T": 242,
+      "achieved": {
+        "grasp": 69,
+        "lift": 117
+      },
+      "lived": {
+        "grasp": 69,
+        "lift": 120
+      },
+      "details": {
+        "hook": 160
+      },
+      "env_success_frame": 227,
+      "closing_success_frames": 15,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 30,
+      "demo": "demo_30",
+      "T": 294,
+      "achieved": {
+        "grasp": 59,
+        "lift": 104
+      },
+      "lived": {
+        "grasp": 59,
+        "lift": null
+      },
+      "details": {
+        "hook": 183
+      },
+      "env_success_frame": 254,
+      "closing_success_frames": 16,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 31,
+      "demo": "demo_31",
+      "T": 300,
+      "achieved": {
+        "grasp": 52,
+        "lift": 98
+      },
+      "lived": {
+        "grasp": 52,
+        "lift": 103
+      },
+      "details": {
+        "hook": 208
+      },
+      "env_success_frame": 287,
+      "closing_success_frames": 13,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 32,
+      "demo": "demo_32",
+      "T": 345,
+      "achieved": {
+        "grasp": 68,
+        "lift": 109
+      },
+      "lived": {
+        "grasp": 68,
+        "lift": 113
+      },
+      "details": {
+        "hook": 238
+      },
+      "env_success_frame": 335,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 33,
+      "demo": "demo_33",
+      "T": 321,
+      "achieved": {
+        "grasp": 63,
+        "lift": 104
+      },
+      "lived": {
+        "grasp": 61,
+        "lift": 108
+      },
+      "details": {
+        "hook": 248
+      },
+      "env_success_frame": 311,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 34,
+      "demo": "demo_34",
+      "T": 290,
+      "achieved": {
+        "grasp": 70,
+        "lift": 108
+      },
+      "lived": {
+        "grasp": 71,
+        "lift": 111
+      },
+      "details": {
+        "hook": 216
+      },
+      "env_success_frame": 280,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 35,
+      "demo": "demo_35",
+      "T": 277,
+      "achieved": {
+        "grasp": 58,
+        "lift": 97
+      },
+      "lived": {
+        "grasp": 59,
+        "lift": 102
+      },
+      "details": {
+        "hook": 180
+      },
+      "env_success_frame": 260,
+      "closing_success_frames": 17,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 36,
+      "demo": "demo_36",
+      "T": 319,
+      "achieved": {
+        "grasp": 65,
+        "lift": 111
+      },
+      "lived": {
+        "grasp": 68,
+        "lift": 114
+      },
+      "details": {
+        "hook": 231
+      },
+      "env_success_frame": 309,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 37,
+      "demo": "demo_37",
+      "T": 228,
+      "achieved": {
+        "grasp": 68,
+        "lift": 110
+      },
+      "lived": {
+        "grasp": 68,
+        "lift": 114
+      },
+      "details": {
+        "hook": 150
+      },
+      "env_success_frame": 218,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 38,
+      "demo": "demo_38",
+      "T": 237,
+      "achieved": {
+        "grasp": 66,
+        "lift": 106
+      },
+      "lived": {
+        "grasp": 63,
+        "lift": 110
+      },
+      "details": {
+        "hook": 161
+      },
+      "env_success_frame": 227,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 39,
+      "demo": "demo_39",
+      "T": 254,
+      "achieved": {
+        "grasp": 65,
+        "lift": 104
+      },
+      "lived": {
+        "grasp": 66,
+        "lift": 108
+      },
+      "details": {
+        "hook": 167
+      },
+      "env_success_frame": 244,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 40,
+      "demo": "demo_40",
+      "T": 252,
+      "achieved": {
+        "grasp": 59,
+        "lift": 105
+      },
+      "lived": {
+        "grasp": 61,
+        "lift": 109
+      },
+      "details": {
+        "hook": 172
+      },
+      "env_success_frame": 231,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 41,
+      "demo": "demo_41",
+      "T": 244,
+      "achieved": {
+        "grasp": 64,
+        "lift": 109
+      },
+      "lived": {
+        "grasp": 64,
+        "lift": 113
+      },
+      "details": {
+        "hook": 182
+      },
+      "env_success_frame": 234,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 42,
+      "demo": "demo_42",
+      "T": 272,
+      "achieved": {
+        "grasp": 55,
+        "lift": 105
+      },
+      "lived": {
+        "grasp": 55,
+        "lift": 109
+      },
+      "details": {
+        "hook": 151
+      },
+      "env_success_frame": 262,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 43,
+      "demo": "demo_43",
+      "T": 252,
+      "achieved": {
+        "grasp": 61,
+        "lift": 107
+      },
+      "lived": {
+        "grasp": 62,
+        "lift": 111
+      },
+      "details": {
+        "hook": 156
+      },
+      "env_success_frame": 242,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 44,
+      "demo": "demo_44",
+      "T": 266,
+      "achieved": {
+        "grasp": 62,
+        "lift": 107
+      },
+      "lived": {
+        "grasp": 62,
+        "lift": 110
+      },
+      "details": {
+        "hook": 183
+      },
+      "env_success_frame": 256,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 45,
+      "demo": "demo_45",
+      "T": 281,
+      "achieved": {
+        "grasp": 68,
+        "lift": 114
+      },
+      "lived": {
+        "grasp": 68,
+        "lift": 117
+      },
+      "details": {
+        "hook": 186
+      },
+      "env_success_frame": 271,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 46,
+      "demo": "demo_46",
+      "T": 346,
+      "achieved": {
+        "grasp": 64,
+        "lift": 111
+      },
+      "lived": {
+        "grasp": 70,
+        "lift": 114
+      },
+      "details": {
+        "hook": 192
+      },
+      "env_success_frame": 286,
+      "closing_success_frames": 40,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 47,
+      "demo": "demo_47",
+      "T": 256,
+      "achieved": {
+        "grasp": 66,
+        "lift": 110
+      },
+      "lived": {
+        "grasp": 67,
+        "lift": 114
+      },
+      "details": {
+        "hook": 158
+      },
+      "env_success_frame": 246,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 48,
+      "demo": "demo_48",
+      "T": 263,
+      "achieved": {
+        "grasp": 58,
+        "lift": 99
+      },
+      "lived": {
+        "grasp": 58,
+        "lift": 102
+      },
+      "details": {
+        "hook": 161
+      },
+      "env_success_frame": 251,
+      "closing_success_frames": 12,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 49,
+      "demo": "demo_49",
+      "T": 233,
+      "achieved": {
+        "grasp": 68,
+        "lift": 113
+      },
+      "lived": {
+        "grasp": 68,
+        "lift": 116
+      },
+      "details": {
+        "hook": 144
+      },
+      "env_success_frame": 223,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    }
+  ]
+}

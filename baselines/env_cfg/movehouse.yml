@@ -1,0 +1,8 @@
+config:
+  robot: g1x3
+  sim: default
+
+gym_id: Isaac-MoveHouse-G1x3-v0
+
+# Extra eval videos, never policy inputs. scene_cut cuts from scene to scene_2.
+extra_video_cameras: scene_2,scene_cut

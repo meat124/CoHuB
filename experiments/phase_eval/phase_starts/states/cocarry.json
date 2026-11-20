@@ -1,0 +1,895 @@
+{
+  "schema": 2,
+  "task": "cocarry",
+  "gym_id": "Isaac-CoCarry-G1x2-v0",
+  "chain": [
+    "grasp_lift",
+    "carry",
+    "release"
+  ],
+  "details": [],
+  "collaborative": {
+    "grasp_lift": true,
+    "carry": true,
+    "release": true
+  },
+  "checks_key": "carry_success",
+  "step_dt": 0.02,
+  "budgets": {
+    "grasp_lift": 450,
+    "carry": 850,
+    "release": 400
+  },
+  "phase_length_max": {
+    "grasp_lift": 222,
+    "carry": 406,
+    "release": 181
+  },
+  "lived_slack": 100,
+  "lived_trials": {
+    "grasp_lift": 50,
+    "carry": 50,
+    "release": 27
+  },
+  "source": {
+    "split": "train",
+    "demos": 50,
+    "frames": 27362,
+    "mhbench_sha": "f47fa31f3f92a32e076dc850b0cbcd781d372317",
+    "shards_match_export": "exact",
+    "unreproduced_success": [],
+    "export_revision": "a2bef2aea1355f5d2205adca98e0c14252994917"
+  },
+  "demos": [
+    {
+      "episode_index": 0,
+      "demo": "demo_0",
+      "T": 596,
+      "achieved": {
+        "grasp_lift": 221,
+        "carry": 449
+      },
+      "lived": {
+        "grasp_lift": 117,
+        "carry": 516
+      },
+      "details": {},
+      "env_success_frame": 556,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 1,
+      "demo": "demo_1",
+      "T": 488,
+      "achieved": {
+        "grasp_lift": 120,
+        "carry": 373
+      },
+      "lived": {
+        "grasp_lift": 119,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 478,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 2,
+      "demo": "demo_2",
+      "T": 534,
+      "achieved": {
+        "grasp_lift": 142,
+        "carry": 417
+      },
+      "lived": {
+        "grasp_lift": 137,
+        "carry": 413
+      },
+      "details": {},
+      "env_success_frame": 524,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 3,
+      "demo": "demo_3",
+      "T": 561,
+      "achieved": {
+        "grasp_lift": 133,
+        "carry": 415
+      },
+      "lived": {
+        "grasp_lift": 131,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 537,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 4,
+      "demo": "demo_4",
+      "T": 541,
+      "achieved": {
+        "grasp_lift": 120,
+        "carry": 404
+      },
+      "lived": {
+        "grasp_lift": 119,
+        "carry": 397
+      },
+      "details": {},
+      "env_success_frame": 522,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 5,
+      "demo": "demo_5",
+      "T": 658,
+      "achieved": {
+        "grasp_lift": 137,
+        "carry": 467
+      },
+      "lived": {
+        "grasp_lift": 140,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 648,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 6,
+      "demo": "demo_6",
+      "T": 634,
+      "achieved": {
+        "grasp_lift": 143,
+        "carry": 490
+      },
+      "lived": {
+        "grasp_lift": 131,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 624,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 7,
+      "demo": "demo_7",
+      "T": 555,
+      "achieved": {
+        "grasp_lift": 111,
+        "carry": 429
+      },
+      "lived": {
+        "grasp_lift": 112,
+        "carry": 432
+      },
+      "details": {},
+      "env_success_frame": 545,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 8,
+      "demo": "demo_8",
+      "T": 539,
+      "achieved": {
+        "grasp_lift": 108,
+        "carry": 395
+      },
+      "lived": {
+        "grasp_lift": 108,
+        "carry": 396
+      },
+      "details": {},
+      "env_success_frame": 529,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 9,
+      "demo": "demo_9",
+      "T": 548,
+      "achieved": {
+        "grasp_lift": 101,
+        "carry": 394
+      },
+      "lived": {
+        "grasp_lift": 102,
+        "carry": 447
+      },
+      "details": {},
+      "env_success_frame": 538,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 10,
+      "demo": "demo_10",
+      "T": 537,
+      "achieved": {
+        "grasp_lift": 107,
+        "carry": 428
+      },
+      "lived": {
+        "grasp_lift": 109,
+        "carry": 418
+      },
+      "details": {},
+      "env_success_frame": 527,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 11,
+      "demo": "demo_11",
+      "T": 554,
+      "achieved": {
+        "grasp_lift": 106,
+        "carry": 427
+      },
+      "lived": {
+        "grasp_lift": 111,
+        "carry": 412
+      },
+      "details": {},
+      "env_success_frame": 544,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 12,
+      "demo": "demo_12",
+      "T": 539,
+      "achieved": {
+        "grasp_lift": 110,
+        "carry": 403
+      },
+      "lived": {
+        "grasp_lift": 110,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 529,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 13,
+      "demo": "demo_13",
+      "T": 558,
+      "achieved": {
+        "grasp_lift": 110,
+        "carry": 424
+      },
+      "lived": {
+        "grasp_lift": 108,
+        "carry": 430
+      },
+      "details": {},
+      "env_success_frame": 540,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 14,
+      "demo": "demo_14",
+      "T": 551,
+      "achieved": {
+        "grasp_lift": 102,
+        "carry": 414
+      },
+      "lived": {
+        "grasp_lift": 101,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 541,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 15,
+      "demo": "demo_15",
+      "T": 649,
+      "achieved": {
+        "grasp_lift": 104,
+        "carry": 467
+      },
+      "lived": {
+        "grasp_lift": 103,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 639,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 16,
+      "demo": "demo_16",
+      "T": 571,
+      "achieved": {
+        "grasp_lift": 102,
+        "carry": 425
+      },
+      "lived": {
+        "grasp_lift": 103,
+        "carry": 431
+      },
+      "details": {},
+      "env_success_frame": 561,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 17,
+      "demo": "demo_17",
+      "T": 520,
+      "achieved": {
+        "grasp_lift": 103,
+        "carry": 402
+      },
+      "lived": {
+        "grasp_lift": 108,
+        "carry": 404
+      },
+      "details": {},
+      "env_success_frame": 510,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 18,
+      "demo": "demo_18",
+      "T": 595,
+      "achieved": {
+        "grasp_lift": 103,
+        "carry": 498
+      },
+      "lived": {
+        "grasp_lift": 105,
+        "carry": 443
+      },
+      "details": {},
+      "env_success_frame": 585,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 19,
+      "demo": "demo_19",
+      "T": 552,
+      "achieved": {
+        "grasp_lift": 104,
+        "carry": 443
+      },
+      "lived": {
+        "grasp_lift": 104,
+        "carry": 431
+      },
+      "details": {},
+      "env_success_frame": 542,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 20,
+      "demo": "demo_20",
+      "T": 521,
+      "achieved": {
+        "grasp_lift": 93,
+        "carry": 387
+      },
+      "lived": {
+        "grasp_lift": 96,
+        "carry": 389
+      },
+      "details": {},
+      "env_success_frame": 511,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 21,
+      "demo": "demo_21",
+      "T": 529,
+      "achieved": {
+        "grasp_lift": 102,
+        "carry": 385
+      },
+      "lived": {
+        "grasp_lift": 102,
+        "carry": 385
+      },
+      "details": {},
+      "env_success_frame": 512,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 22,
+      "demo": "demo_22",
+      "T": 480,
+      "achieved": {
+        "grasp_lift": 88,
+        "carry": 369
+      },
+      "lived": {
+        "grasp_lift": 89,
+        "carry": 361
+      },
+      "details": {},
+      "env_success_frame": 470,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 23,
+      "demo": "demo_23",
+      "T": 557,
+      "achieved": {
+        "grasp_lift": 79,
+        "carry": 406
+      },
+      "lived": {
+        "grasp_lift": 80,
+        "carry": 395
+      },
+      "details": {},
+      "env_success_frame": 547,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 24,
+      "demo": "demo_24",
+      "T": 636,
+      "achieved": {
+        "grasp_lift": 87,
+        "carry": 493
+      },
+      "lived": {
+        "grasp_lift": 89,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 626,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 25,
+      "demo": "demo_25",
+      "T": 547,
+      "achieved": {
+        "grasp_lift": 108,
+        "carry": 405
+      },
+      "lived": {
+        "grasp_lift": 109,
+        "carry": 409
+      },
+      "details": {},
+      "env_success_frame": 537,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 26,
+      "demo": "demo_26",
+      "T": 533,
+      "achieved": {
+        "grasp_lift": 101,
+        "carry": 386
+      },
+      "lived": {
+        "grasp_lift": 102,
+        "carry": 446
+      },
+      "details": {},
+      "env_success_frame": 505,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 27,
+      "demo": "demo_27",
+      "T": 515,
+      "achieved": {
+        "grasp_lift": 85,
+        "carry": 363
+      },
+      "lived": {
+        "grasp_lift": 84,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 505,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 28,
+      "demo": "demo_28",
+      "T": 531,
+      "achieved": {
+        "grasp_lift": 82,
+        "carry": 368
+      },
+      "lived": {
+        "grasp_lift": 84,
+        "carry": 375
+      },
+      "details": {},
+      "env_success_frame": 521,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 29,
+      "demo": "demo_29",
+      "T": 518,
+      "achieved": {
+        "grasp_lift": 90,
+        "carry": 381
+      },
+      "lived": {
+        "grasp_lift": 91,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 508,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 30,
+      "demo": "demo_30",
+      "T": 547,
+      "achieved": {
+        "grasp_lift": 88,
+        "carry": 399
+      },
+      "lived": {
+        "grasp_lift": 91,
+        "carry": 412
+      },
+      "details": {},
+      "env_success_frame": 537,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 31,
+      "demo": "demo_31",
+      "T": 532,
+      "achieved": {
+        "grasp_lift": 81,
+        "carry": 395
+      },
+      "lived": {
+        "grasp_lift": 81,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 522,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 32,
+      "demo": "demo_32",
+      "T": 552,
+      "achieved": {
+        "grasp_lift": 98,
+        "carry": 409
+      },
+      "lived": {
+        "grasp_lift": 98,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 524,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 33,
+      "demo": "demo_33",
+      "T": 493,
+      "achieved": {
+        "grasp_lift": 90,
+        "carry": 378
+      },
+      "lived": {
+        "grasp_lift": 89,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 483,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 34,
+      "demo": "demo_34",
+      "T": 468,
+      "achieved": {
+        "grasp_lift": 76,
+        "carry": 358
+      },
+      "lived": {
+        "grasp_lift": 79,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 458,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 35,
+      "demo": "demo_35",
+      "T": 518,
+      "achieved": {
+        "grasp_lift": 82,
+        "carry": 385
+      },
+      "lived": {
+        "grasp_lift": 86,
+        "carry": 468
+      },
+      "details": {},
+      "env_success_frame": 508,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 36,
+      "demo": "demo_36",
+      "T": 549,
+      "achieved": {
+        "grasp_lift": 97,
+        "carry": 396
+      },
+      "lived": {
+        "grasp_lift": 100,
+        "carry": 493
+      },
+      "details": {},
+      "env_success_frame": 539,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 37,
+      "demo": "demo_37",
+      "T": 566,
+      "achieved": {
+        "grasp_lift": 113,
+        "carry": 425
+      },
+      "lived": {
+        "grasp_lift": 114,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 556,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 38,
+      "demo": "demo_38",
+      "T": 535,
+      "achieved": {
+        "grasp_lift": 107,
+        "carry": 412
+      },
+      "lived": {
+        "grasp_lift": 104,
+        "carry": 418
+      },
+      "details": {},
+      "env_success_frame": 510,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 39,
+      "demo": "demo_39",
+      "T": 596,
+      "achieved": {
+        "grasp_lift": 95,
+        "carry": 405
+      },
+      "lived": {
+        "grasp_lift": 99,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 586,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 40,
+      "demo": "demo_40",
+      "T": 519,
+      "achieved": {
+        "grasp_lift": 79,
+        "carry": 362
+      },
+      "lived": {
+        "grasp_lift": 80,
+        "carry": 387
+      },
+      "details": {},
+      "env_success_frame": 509,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 41,
+      "demo": "demo_41",
+      "T": 500,
+      "achieved": {
+        "grasp_lift": 83,
+        "carry": 374
+      },
+      "lived": {
+        "grasp_lift": 82,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 490,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 42,
+      "demo": "demo_42",
+      "T": 592,
+      "achieved": {
+        "grasp_lift": 175,
+        "carry": 461
+      },
+      "lived": {
+        "grasp_lift": 199,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 582,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 43,
+      "demo": "demo_43",
+      "T": 588,
+      "achieved": {
+        "grasp_lift": 93,
+        "carry": 420
+      },
+      "lived": {
+        "grasp_lift": 93,
+        "carry": 404
+      },
+      "details": {},
+      "env_success_frame": 557,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 44,
+      "demo": "demo_44",
+      "T": 567,
+      "achieved": {
+        "grasp_lift": 85,
+        "carry": 387
+      },
+      "lived": {
+        "grasp_lift": 84,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 557,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 45,
+      "demo": "demo_45",
+      "T": 513,
+      "achieved": {
+        "grasp_lift": 85,
+        "carry": 382
+      },
+      "lived": {
+        "grasp_lift": 86,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 503,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 46,
+      "demo": "demo_46",
+      "T": 510,
+      "achieved": {
+        "grasp_lift": 90,
+        "carry": 378
+      },
+      "lived": {
+        "grasp_lift": 94,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 497,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 47,
+      "demo": "demo_47",
+      "T": 524,
+      "achieved": {
+        "grasp_lift": 73,
+        "carry": 386
+      },
+      "lived": {
+        "grasp_lift": 77,
+        "carry": 366
+      },
+      "details": {},
+      "env_success_frame": 514,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 48,
+      "demo": "demo_48",
+      "T": 521,
+      "achieved": {
+        "grasp_lift": 100,
+        "carry": 382
+      },
+      "lived": {
+        "grasp_lift": 102,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 511,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 49,
+      "demo": "demo_49",
+      "T": 525,
+      "achieved": {
+        "grasp_lift": 92,
+        "carry": 395
+      },
+      "lived": {
+        "grasp_lift": 94,
+        "carry": null
+      },
+      "details": {},
+      "env_success_frame": 515,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    }
+  ]
+}

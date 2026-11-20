@@ -1,0 +1,47 @@
+# Basic experiment configuration
+policy_name: GR00T_N17
+protocol: ws
+host: localhost
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+gpu_id: null
+eval_batch: false
+
+# Model / checkpoint configuration (local paths relative to policy/GR00T_N17/)
+action_type: joint
+embodiment_tag: NEW_EMBODIMENT
+# decentralized | centralized (one policy emitting both robots' action).
+# model_dir overrides the shared and centralized run directory,
+# model_dir_robot_a/_robot_b the per-robot pair's.
+cohub_mode: decentralized
+# shared: one multitask policy drives both robots. per_robot: one checkpoint per
+# (task, robot). scripts/eval/runner.sh overrides this from
+# COHUB_DECENTRALIZED_STYLE.
+cohub_decentralized_style: shared
+# Suffix train.sh gave the run directory (CKPT_TAG): full, scene, ...
+ckpt_tag: null
+# Finetuned step under checkpoints/<ckpt_name>/; null = auto-resolve + checkpoint_num
+checkpoint_num: last
+model_dir: null
+# Cosmos backbone for processor; HuggingFace repo id (auto-download) or relative local path
+cosmos_model_path: shared/Cosmos-Reason2-2B
+default_prompt: Perform the robot manipulation task.
+
+# uv environment for policy server
+policy_uv_env_path: gr00t_n17
+
+port: 6000
+
+# --- CoHuB (bench_name=cohub): one server drives both decentralized robots ---
+# ckpt_name is the task (cocarry/handover/...), or `multitask` for the shared
+# decentralized policy; per-robot merged model dirs resolve to
+# checkpoints/cohub-<task>_robot_<r>-unitree_g1x2_decentralized-joint-<seed>/<same>/merged-<step>.
+merged_checkpoint: last
+exec_horizon: 40
+model_dir_robot_a: null
+model_dir_robot_b: null
+prompt_robot_a: null
+prompt_robot_b: null

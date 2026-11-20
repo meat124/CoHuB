@@ -1,0 +1,164 @@
+#usda 1.0
+(
+    defaultPrim = "AlignTable"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "AlignTable" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+)
+{
+    bool physics:kinematicEnabled = 0
+    float physics:mass = 4
+    bool physics:rigidBodyEnabled = 1
+
+    def Scope "Looks"
+    {
+        def Material "TopMaterial"
+        {
+            token outputs:surface.connect = </AlignTable/Looks/TopMaterial/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.87, 0.87, 0.87)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.45
+                token outputs:surface
+            }
+        }
+
+        def Material "FrameMaterial"
+        {
+            token outputs:surface.connect = </AlignTable/Looks/FrameMaterial/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.6, 0.6, 0.6)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.45
+                token outputs:surface
+            }
+        }
+    }
+
+    def Cube "Top" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/TopMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (1.402, 0.643, 0.044)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Foot_a" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.626, 0.044)
+        double3 xformOp:translate = (-0.632, 0, -0.658)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "HeadBeam_a" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.626, 0.028)
+        double3 xformOp:translate = (-0.632, 0, -0.03600000000000003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_a0" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.045, 0.586)
+        double3 xformOp:translate = (-0.632, -0.292, -0.343)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_a1" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.045, 0.586)
+        double3 xformOp:translate = (-0.632, 0.292, -0.343)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Foot_b" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.626, 0.044)
+        double3 xformOp:translate = (0.632, 0, -0.658)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "HeadBeam_b" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.626, 0.028)
+        double3 xformOp:translate = (0.632, 0, -0.03600000000000003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_b0" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.045, 0.586)
+        double3 xformOp:translate = (0.632, -0.292, -0.343)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Post_b1" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </AlignTable/Looks/FrameMaterial>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.071, 0.045, 0.586)
+        double3 xformOp:translate = (0.632, 0.292, -0.343)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+}
+

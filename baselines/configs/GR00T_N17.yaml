@@ -1,0 +1,41 @@
+# GR00T N1.7 settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+
+# ---- run identity -----------------------------------------------------------
+CKPT_TAG: cohub2                    # suffix on the checkpoint dir, the eval dirs and the wandb run
+WANDB_PROJECT: CoHuB_GR00T
+
+# ---- training: budget -------------------------------------------------------
+MAX_STEPS: 40000
+SAVE_STEPS: 10000                   # steps between checkpoints
+GLOBAL_BATCH_SIZE: 32
+
+# ---- training: adapters -----------------------------------------------------
+# LoRA on the DiT action expert and on the LLM backbone. The ViT trains in full.
+LORA_RANK: 32
+LORA_ALPHA: 32
+LORA_DROPOUT: 0
+LORA_FULL_MODEL: 1
+COHUB_LORA_TARGETS: attn+ffn
+COHUB_LORA_BACKBONE_RANK: 16
+COHUB_LORA_BACKBONE_ALPHA: 16
+TUNE_VISUAL: 1
+TUNE_LLM: 0
+
+# ---- training: optimiser and schedule ---------------------------------------
+# AdamW. Linear warm-up, then cosine from GR00T_LR to GR00T_MIN_LR.
+GR00T_LR: 2.5e-5
+GR00T_MIN_LR: 2.5e-6
+GR00T_LR_SCHEDULER: cosine_with_min_lr
+GR00T_WARMUP_STEPS: 1000
+GR00T_WARMUP_RATIO: 0
+GR00T_WEIGHT_DECAY: 1e-10
+GR00T_ADAM_BETA1: 0.9
+GR00T_ADAM_BETA2: 0.95
+GR00T_ADAM_EPS: 1e-8
+GR00T_MAX_GRAD_NORM: 1.0
+
+# ---- evaluation ------------------------------------------------------------
+COHUB_EVAL_CKPTS: 20000 40000     # checkpoints to evaluate, by step
+COHUB_EVAL_EPISODES: 100             # per task
+COHUB_EVAL_SEED: 1                   # episode i runs at seed COHUB_EVAL_SEED + i

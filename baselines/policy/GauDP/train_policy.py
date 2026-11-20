@@ -1,0 +1,618 @@
+#!/usr/bin/env python3
+"""Train the GauDP policy from offline Gaussian features."""
+
+from __future__ import annotations
+
+import argparse
+import math
+import os
+import random
+import sys
+import time
+from pathlib import Path
+
+# The repository root: `baselines` imports from this checkout.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+def _seed_everything(seed: int) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+
+def _to_device(batch: dict[str, torch.Tensor], device: torch.device) -> dict[str, torch.Tensor]:
+    return {key: value.to(device, non_blocking=True) for key, value in batch.items()}
+
+
+def _format_duration(seconds: float) -> str:
+    seconds = max(0, int(seconds))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
+def _parse_optional_int(value) -> int | None:
+    if value is None or str(value).strip().lower() in ("none", "null", ""):
+        return None
+    return int(value)
+
+
+def _parse_crop_shape(value) -> tuple[int, int] | None:
+    """Accept 'H W', 'HxW', 'H,W' or 'none'."""
+    if value is None or str(value).strip().lower() in ("none", "null", ""):
+        return None
+    parts = [part for part in str(value).replace("x", " ").replace(",", " ").split() if part]
+    if len(parts) != 2:
+        raise ValueError(f"expected two integers or 'none', got {value!r}")
+    return (int(parts[0]), int(parts[1]))
+
+
+def _should_log_batch(completed: int, total: int, interval: int) -> bool:
+    return interval > 0 and (completed == 1 or completed == total or completed % interval == 0)
+
+
+def _progress_metrics(completed: int, total: int, started_at: float, phase: str) -> dict[str, float]:
+    elapsed = max(time.monotonic() - started_at, 1e-6)
+    rate = completed / elapsed
+    eta = (total - completed) / rate if rate > 0 else 0.0
+    metrics = {
+        f"progress/{phase}_batch": completed,
+        f"progress/{phase}_batches": total,
+        f"progress/{phase}_fraction": completed / max(1, total),
+        f"performance/{phase}_batches_per_second": rate,
+        f"performance/{phase}_eta_seconds": eta,
+        f"performance/{phase}_elapsed_seconds": elapsed,
+    }
+    if torch.cuda.is_available():
+        gib = 1024**3
+        metrics.update(
+            {
+                "system/gpu_allocated_gib": torch.cuda.memory_allocated() / gib,
+                "system/gpu_reserved_gib": torch.cuda.memory_reserved() / gib,
+                "system/gpu_peak_allocated_gib": torch.cuda.max_memory_allocated() / gib,
+            }
+        )
+    return metrics
+
+
+def _print_batch_progress(epoch: int, epochs: int, phase: str, metrics: dict) -> None:
+    completed = int(metrics[f"progress/{phase}_batch"])
+    total = int(metrics[f"progress/{phase}_batches"])
+    percent = 100.0 * float(metrics[f"progress/{phase}_fraction"])
+    rate = float(metrics[f"performance/{phase}_batches_per_second"])
+    eta = _format_duration(float(metrics[f"performance/{phase}_eta_seconds"]))
+    loss = float(metrics[f"{phase}/batch_loss"])
+    diagnostics = ""
+    action_mae_key = f"{phase}/batch/action/x0_clipped_mae"
+    cosine_key = f"{phase}/batch/diffusion/noise_cosine"
+    grad_key = f"{phase}/batch/optimization/grad_norm"
+    if action_mae_key in metrics:
+        diagnostics += f" action_mae={metrics[action_mae_key]:.4f}"
+    if cosine_key in metrics:
+        diagnostics += f" noise_cos={metrics[cosine_key]:.3f}"
+    if grad_key in metrics:
+        diagnostics += f" grad_norm={metrics[grad_key]:.3f}"
+    gpu = ""
+    if "system/gpu_allocated_gib" in metrics:
+        gpu = (
+            f" gpu={metrics['system/gpu_allocated_gib']:.2f}GiB"
+            f" reserved={metrics['system/gpu_reserved_gib']:.2f}GiB"
+            f" peak={metrics['system/gpu_peak_allocated_gib']:.2f}GiB"
+        )
+    print(
+        f"[GauDP][policy] epoch={epoch + 1}/{epochs} {phase}={completed}/{total} "
+        f"({percent:.1f}%) loss={loss:.6f}{diagnostics} "
+        f"rate={rate:.3f} batch/s eta={eta}{gpu}",
+        flush=True,
+    )
+
+
+def _scheduled_lr(base_lr: float, epoch: int, epochs: int, step: int, warmup: int) -> float:
+    """LR of one optimizer step: per-epoch cosine from base_lr to 0, with a linear
+    warmup over the first `warmup` optimizer steps."""
+    cosine = 0.5 * (1.0 + math.cos(math.pi * epoch / max(1, epochs)))
+    warm = min(1.0, (step + 1) / warmup) if warmup else 1.0
+    return base_lr * cosine * warm
+
+
+def _accumulated_backward(policy, micro_batches, grad_accum: int, device, state_noise_scale=None):
+    """Backward one optimizer step's worth of micro-batches; returns its loss and metrics.
+
+    Each micro-batch is weighted by its share of the samples, so the summed
+    gradient equals the full batch's mean-loss gradient.
+    """
+    import torch
+
+    parts = []
+    for _ in range(grad_accum):
+        try:
+            parts.append(_to_device(next(micro_batches), device))
+        except StopIteration:
+            break
+    if not parts:
+        raise RuntimeError("an optimizer step was scheduled with no micro-batch left in the epoch")
+    sizes = [int(part["action"].shape[0]) for part in parts]
+    total = float(sum(sizes))
+    loss_sum = 0.0
+    metrics: dict[str, float] = {}
+    for part, size in zip(parts, sizes):
+        if state_noise_scale is not None:
+            part["state"] = part["state"] + torch.randn_like(part["state"]) * state_noise_scale
+        loss, part_metrics = policy.compute_loss(part, return_metrics=True)
+        (loss * (size / total)).backward()
+        loss_sum += float(loss.detach()) * size
+        for key, value in part_metrics.items():
+            metrics[key] = metrics.get(key, 0.0) + float(value) * size / total
+    return torch.tensor(loss_sum / total), metrics
+
+
+def _accumulate(sums: dict[str, float], metrics: dict[str, float]) -> None:
+    for key, value in metrics.items():
+        sums[key] = sums.get(key, 0.0) + float(value)
+
+
+def _validate_resume_payload(
+    payload: dict,
+    expected_contract: dict,
+    checkpoint: Path,
+    gaussian_checkpoint: Path,
+    camera_order: list[str],
+    epochs: int,
+) -> int:
+    """Validate a policy checkpoint and return the next zero-based epoch."""
+    for key in ("format", "config", "state_dim", "action_dim", "state_schema", "action_schema"):
+        if payload.get(key) != expected_contract.get(key):
+            raise ValueError(
+                f"resume checkpoint {checkpoint} has incompatible {key}: "
+                f"{payload.get(key)!r} != {expected_contract.get(key)!r}"
+            )
+    if list(payload.get("camera_order", ())) != list(camera_order):
+        raise ValueError(
+            f"resume checkpoint {checkpoint} uses cameras {payload.get('camera_order')!r}, "
+            f"but the dataset uses {camera_order!r}"
+        )
+    recorded_gaussian = Path(str(payload.get("gaussian_checkpoint", ""))).expanduser().resolve()
+    if recorded_gaussian != gaussian_checkpoint.expanduser().resolve():
+        raise ValueError(
+            f"resume checkpoint {checkpoint} uses Gaussian checkpoint {recorded_gaussian}, "
+            f"but this run requested {gaussian_checkpoint.expanduser().resolve()}"
+        )
+    for key in ("state_dict", "optimizer_state", "scheduler_state", "epoch", "metrics"):
+        if key not in payload:
+            raise ValueError(f"resume checkpoint {checkpoint} is missing {key}")
+    scheduler_epochs = int(payload["scheduler_state"].get("T_max", -1))
+    if scheduler_epochs != epochs:
+        raise ValueError(
+            f"resume checkpoint {checkpoint} used a {scheduler_epochs}-epoch LR schedule, "
+            f"but --epochs is {epochs}"
+        )
+    next_epoch = int(payload["epoch"]) + 1
+    if not 0 < next_epoch < epochs:
+        raise ValueError(
+            f"resume checkpoint {checkpoint} would start at epoch {next_epoch + 1}, "
+            f"outside a {epochs}-epoch run"
+        )
+    return next_epoch
+
+
+class EMA:
+    """EMA of the policy weights, with diffusion_policy's EMAModel schedule.
+
+    Checkpoints store the averaged weights.
+    """
+
+    def __init__(self, model, inv_gamma=1.0, power=0.75, max_value=0.9999):
+        self.shadow = {
+            key: value.detach().clone().float()
+            for key, value in model.state_dict().items()
+            if not key.startswith("gaussian_encoder.")
+        }
+        self.inv_gamma, self.power, self.max_value = inv_gamma, power, max_value
+        self.step = 0
+
+    def decay(self) -> float:
+        step = max(0, self.step - 1)
+        if step <= 0:
+            return 0.0
+        return min(1 - (1 + step / self.inv_gamma) ** -self.power, self.max_value)
+
+    def update(self, model) -> None:
+        decay = self.decay()
+        self.step += 1
+        with torch.no_grad():
+            for key, value in model.state_dict().items():
+                if key not in self.shadow:
+                    continue
+                if value.dtype.is_floating_point:
+                    self.shadow[key].mul_(decay).add_(value.detach().float(), alpha=1 - decay)
+                else:
+                    self.shadow[key].copy_(value.detach().float())
+
+    def state(self, reference: dict) -> dict:
+        return {key: self.shadow[key].to(reference[key].dtype) for key in self.shadow}
+
+
+def _apply_range_eps(normalizer, eps: float) -> int:
+    """Give state dims spanning less than `eps` a unit-gain range. Returns their count."""
+    low, high = normalizer.state_min, normalizer.state_max
+    degenerate = (high - low) < eps
+    if not bool(degenerate.any()):
+        return 0
+    centre = (high + low) * 0.5
+    normalizer.state_min = torch.where(degenerate, centre - 1.0, low)
+    normalizer.state_max = torch.where(degenerate, centre + 1.0, high)
+    return int(degenerate.sum())
+
+
+def _save(
+    path: Path, policy: GauDPPolicy, optimizer, scheduler, epoch, metrics,
+    gaussian_checkpoint: Path, camera_order: list[str], ema: "EMA | None" = None,
+):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    payload = policy_checkpoint_payload(
+        policy,
+        optimizer_state=optimizer.state_dict(),
+        scheduler_state=scheduler.state_dict(),
+        epoch=epoch,
+        metrics=metrics,
+        gaussian_checkpoint=str(gaussian_checkpoint.expanduser().resolve()),
+        camera_order=list(camera_order),
+    )
+    if ema is not None:
+        payload["state_dict"] = ema.state(payload["state_dict"])
+        payload["ema"] = True
+    torch.save(
+        payload,
+        temporary,
+    )
+    os.replace(temporary, path)
+
+
+def main() -> None:
+    global torch
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--gaussian", type=Path, required=True)
+    parser.add_argument("--gaussian-features", type=Path, required=True)
+    parser.add_argument("--seed", type=int, default=42)
+    # Defaults are the recipe tuned on handover (arm S02 in train_ab.py).
+    parser.add_argument("--epochs", type=int, default=150)
+    parser.add_argument("--batch-size", type=int, default=128)
+    parser.add_argument("--grad-accum", type=int, default=1,
+                        help="split each --batch-size batch into this many micro-batches (a 24 GB card "
+                             "cannot hold 128); the loss is a batch mean and every norm is GroupNorm, "
+                             "so the optimizer step is the same as one full batch")
+    parser.add_argument("--num-workers", type=int, default=6)
+    # Peak LR.
+    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--warmup", type=int, default=500,
+                        help="linear LR warmup steps (0 disables)")
+    parser.add_argument("--state-noise", type=float, default=0.02,
+                        help="Gaussian noise on proprioception during training, in units of "
+                             "half the per-dim demonstration span; breaks the state->action "
+                             "shortcut that leaves the visual branch without gradient")
+    parser.add_argument("--normalizer-range-eps", type=float, default=1e-4,
+                        help="state dims spanning less than this are given unit gain")
+    parser.add_argument("--no-ema", dest="ema", action="store_false",
+                        help="save the live weights instead of their EMA")
+    parser.set_defaults(ema=True)
+    # 40 predicted / 20 executed steps at 50 Hz.
+    parser.add_argument("--horizon", type=int, default=40)
+    parser.add_argument("--obs-steps", type=int, default=1)
+    parser.add_argument("--action-steps", type=int, default=20)
+    parser.add_argument("--inference-steps", type=int, default=100)
+    # Vision recipe. Every value is recorded in the checkpoint.
+    parser.add_argument(
+        "--crop-shape",
+        default="216 288",
+        help="random crop while training / centre crop at eval, as 'H W'; "
+             "'none' disables it. Upstream Policy-Lightning leaves crop_shape "
+             "null, but CoHuB's own DP baseline crops to 90%% of the frame and "
+             "its config records why: without it validation loss bottoms early "
+             "and then climbs. GauDP shows the same curve.",
+    )
+    parser.add_argument(
+        "--image-norm",
+        choices=("imagenet", "symmetric"),
+        default="imagenet",
+        help="normalization applied to the fused 3-channel view before the ResNet. "
+             "'imagenet' is upstream's MultiImageObsEncoder(imagenet_norm=True); "
+             "'symmetric' is (x-0.5)/0.5, what this port used before.",
+    )
+    parser.add_argument(
+        "--group-norm-divisor",
+        default="16",
+        help="BatchNorm->GroupNorm grouping as num_features//DIVISOR (upstream "
+             "uses 16); 'none' keeps this port's original min(32, num_features).",
+    )
+    parser.add_argument(
+        "--log-every",
+        type=int,
+        default=50,
+        help="print and send batch progress to W&B every N batches; 0 disables batch progress logs",
+    )
+    parser.add_argument(
+        "--wandb-mode",
+        choices=("online", "offline", "disabled"),
+        default=os.environ.get("GAUDP_WANDB_MODE", "online"),
+        help="W&B mode; JSONL is always written regardless of this setting",
+    )
+    parser.add_argument("--wandb-project", default=os.environ.get("WANDB_PROJECT", "CoHuB-GauDP"))
+    parser.add_argument("--wandb-entity", default=os.environ.get("WANDB_ENTITY"))
+    parser.add_argument("--wandb-run-name", default=None)
+    parser.add_argument("--wandb-group", default=None)
+    parser.add_argument("--wandb-tags", default="", help="comma-separated W&B tags")
+    parser.add_argument(
+        "--resume",
+        type=Path,
+        default=None,
+        help="resume model, optimizer, scheduler, and epoch from a policy checkpoint",
+    )
+    parser.add_argument("--debug", action="store_true", help="run one train and validation batch")
+    args = parser.parse_args()
+    if args.log_every < 0:
+        parser.error("--log-every must be non-negative")
+    if args.grad_accum < 1 or args.batch_size % args.grad_accum:
+        parser.error(f"--batch-size {args.batch_size} must split evenly into --grad-accum {args.grad_accum}")
+    try:
+        args.crop_shape = _parse_crop_shape(args.crop_shape)
+    except ValueError as error:
+        parser.error(f"--crop-shape: {error}")
+    try:
+        args.group_norm_divisor = _parse_optional_int(args.group_norm_divisor)
+    except ValueError as error:
+        parser.error(f"--group-norm-divisor: {error}")
+
+    global np, torch, DataLoader
+    global GauDPSequenceDataset
+    global GauDPPolicy, policy_checkpoint_payload
+    import numpy as np
+    import torch
+    from torch import nn
+    from torch.utils.data import DataLoader
+    from baselines.policy.GauDP.gaudp.dataset import GauDPSequenceDataset
+    from baselines.policy.GauDP.gaudp.experiment_logger import ExperimentLogger, parse_wandb_tags
+    from baselines.policy.GauDP.gaudp.policy import GauDPPolicy, policy_checkpoint_payload
+
+    _seed_everything(args.seed)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if device.type != "cuda":
+        raise SystemExit("GauDP policy training requires CUDA for the frozen NoPoSplat encoder")
+    train_data = GauDPSequenceDataset(
+        args.data, True, args.horizon, args.obs_steps, args.gaussian_features
+    )
+    val_data = GauDPSequenceDataset(
+        args.data, False, args.horizon, args.obs_steps, args.gaussian_features
+    )
+    cached_checkpoint = Path(train_data.gaussian_checkpoint).resolve()
+    requested_checkpoint = args.gaussian.expanduser().resolve()
+    if cached_checkpoint != requested_checkpoint:
+        raise ValueError(
+            f"offline features were extracted with {cached_checkpoint}, but policy training "
+            f"requested {requested_checkpoint}; re-extract the cache or select the matching checkpoint"
+        )
+    policy = GauDPPolicy(
+        num_views=len(train_data.camera_order),
+        robot_count=train_data.robot_count,
+        horizon=args.horizon,
+        n_obs_steps=args.obs_steps,
+        n_action_steps=args.action_steps,
+        num_inference_steps=args.inference_steps,
+        crop_shape=args.crop_shape,
+        image_norm=args.image_norm,
+        group_norm_divisor=args.group_norm_divisor,
+        # Training reads cached features. model.py loads the real encoder.
+        gaussian_encoder=nn.Identity(),
+    )
+    states, actions = train_data.normalization_arrays()
+    policy.normalizer.fit(states, actions)
+    neutralized = (
+        _apply_range_eps(policy.normalizer, args.normalizer_range_eps)
+        if args.normalizer_range_eps
+        else 0
+    )
+    if neutralized:
+        print(f"[GauDP][policy] neutralized {neutralized} near-constant state dims", flush=True)
+    val_states, val_actions = val_data.normalization_arrays()
+    normalization_metrics = policy.normalizer.range_diagnostics(val_states, val_actions)
+    policy.to(device)
+    # `state_noise` is in normalized units. Convert it to radians per dim.
+    state_span = (policy.normalizer.state_max - policy.normalizer.state_min).clamp_min(1e-6)
+    state_noise_scale = (args.state_noise * state_span * 0.5).to(device)
+
+    trainable = [parameter for parameter in policy.parameters() if parameter.requires_grad]
+    optimizer = torch.optim.AdamW(trainable, lr=args.lr, betas=(0.95, 0.999), weight_decay=1e-6)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, 1 if args.debug else args.epochs))
+    ema = EMA(policy) if args.ema else None
+    micro_batch = args.batch_size // args.grad_accum
+    train_loader = DataLoader(train_data, micro_batch, shuffle=True, num_workers=args.num_workers, pin_memory=True)
+    # Validation runs the full batch.
+    val_loader = DataLoader(val_data, args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
+    # Counted in optimizer steps: one step is --grad-accum micro-batches.
+    train_batches = min(1, len(train_loader)) if args.debug else -(-len(train_loader) // args.grad_accum)
+    val_batches = min(1, len(val_loader)) if args.debug else len(val_loader)
+
+    trainable_count = sum(parameter.numel() for parameter in trainable)
+    total_count = sum(parameter.numel() for parameter in policy.parameters())
+    print(
+        f"[GauDP][policy] device={device} robots={list(train_data.robot_names)} cameras={train_data.camera_order} "
+        f"train_samples={len(train_data)} val_samples={len(val_data)} "
+        f"train_batches={train_batches} val_batches={val_batches} "
+        f"batch_size={args.batch_size} grad_accum={args.grad_accum} micro_batch={micro_batch} "
+        f"workers={args.num_workers} epochs={1 if args.debug else args.epochs} "
+        f"trainable={trainable_count / 1e6:.1f}M / total={total_count / 1e6:.1f}M "
+        f"gaussian_checkpoint={requested_checkpoint} gaussian_features={args.gaussian_features} "
+        f"split={train_data.split_source} log_every={args.log_every} "
+        f"crop_shape={args.crop_shape} image_norm={args.image_norm} "
+        f"group_norm_divisor={args.group_norm_divisor} "
+        f"val_state_oor={normalization_metrics['normalization/val_state_out_of_range_fraction']:.6f} "
+        f"val_action_oor={normalization_metrics['normalization/val_action_out_of_range_fraction']:.6f}",
+        flush=True,
+    )
+
+    epochs = 1 if args.debug else args.epochs
+    best = math.inf
+    start_epoch = 0
+    global_step = 0
+    if args.resume is not None:
+        resume_path = args.resume.expanduser().resolve()
+        if not resume_path.is_file():
+            raise FileNotFoundError(f"resume checkpoint not found: {resume_path}")
+        payload = torch.load(str(resume_path), map_location="cpu", weights_only=False, mmap=True)
+        expected_contract = policy_checkpoint_payload(policy)
+        start_epoch = _validate_resume_payload(
+            payload,
+            expected_contract,
+            resume_path,
+            requested_checkpoint,
+            train_data.camera_order,
+            epochs,
+        )
+        policy.load_state_dict(payload["state_dict"], strict=True)
+        optimizer.load_state_dict(payload["optimizer_state"])
+        scheduler.load_state_dict(payload["scheduler_state"])
+        global_step = start_epoch * train_batches
+        best = float(payload["metrics"].get("val/loss", math.inf))
+        del payload, expected_contract
+
+        # Keep the best val/loss of an existing best.ckpt as the threshold.
+        best_path = args.output / "best.ckpt"
+        if best_path.is_file() and best_path.resolve() != resume_path:
+            best_payload = torch.load(
+                str(best_path), map_location="cpu", weights_only=False, mmap=True
+            )
+            best = min(best, float(best_payload.get("metrics", {}).get("val/loss", math.inf)))
+            del best_payload
+        print(
+            f"[GauDP][policy] resumed from {resume_path} at epoch={start_epoch + 1}/{epochs} "
+            f"global_step={global_step} lr={_scheduled_lr(args.lr, start_epoch, scheduler.T_max, global_step, args.warmup):.8g} "
+            f"best_val_loss={best:.8g}",
+            flush=True,
+        )
+    run_name = args.wandb_run_name or f"{args.output.parent.name}-policy"
+    with ExperimentLogger(
+        args.output,
+        config=vars(args),
+        wandb_mode=args.wandb_mode,
+        wandb_project=args.wandb_project,
+        wandb_run_name=run_name,
+        wandb_entity=args.wandb_entity,
+        wandb_group=args.wandb_group,
+        wandb_tags=parse_wandb_tags(args.wandb_tags),
+    ) as logger:
+        for epoch in range(start_epoch, epochs):
+            epoch_started = time.monotonic()
+            if device.type == "cuda":
+                torch.cuda.reset_peak_memory_stats(device)
+            print(f"[GauDP][policy] epoch={epoch + 1}/{epochs} train started", flush=True)
+            policy.train()
+            train_sums: dict[str, float] = {}
+            train_count = 0
+            train_started = time.monotonic()
+            micro_batches = iter(train_loader)
+            for batch_index in range(train_batches):
+                step_lr = _scheduled_lr(args.lr, epoch, scheduler.T_max, global_step, args.warmup)
+                for group in optimizer.param_groups:
+                    group["lr"] = step_lr
+                optimizer.zero_grad(set_to_none=True)
+                loss, batch_metrics = _accumulated_backward(
+                    policy, micro_batches, args.grad_accum, device, state_noise_scale if args.state_noise else None
+                )
+                if any(parameter.grad is not None for parameter in policy.gaussian_encoder.parameters()):
+                    raise RuntimeError("frozen Gaussian encoder unexpectedly received gradients")
+                grad_norm = float(torch.nn.utils.clip_grad_norm_(trainable, 1.0))
+                batch_metrics["optimization/grad_norm"] = grad_norm
+                batch_metrics["optimization/gradient_clipped"] = float(grad_norm > 1.0)
+                optimizer.step()
+                if ema is not None:
+                    ema.update(policy)
+                _accumulate(train_sums, batch_metrics)
+                train_count += 1
+                global_step += 1
+                completed = batch_index + 1
+                if _should_log_batch(completed, train_batches, args.log_every):
+                    progress = {
+                        "record_type": "batch",
+                        "epoch": epoch,
+                        "global_step": global_step,
+                        "train/batch_loss": float(loss.detach()),
+                        "train/batch/optimization/lr": optimizer.param_groups[0]["lr"],
+                        **{f"train/batch/{key}": value for key, value in batch_metrics.items()},
+                        **_progress_metrics(completed, train_batches, train_started, "train"),
+                    }
+                    logger.log(progress, step=global_step)
+                    _print_batch_progress(epoch, epochs, "train", progress)
+                if args.debug:
+                    break
+            # Counts epochs for resume. The LR comes from _scheduled_lr.
+            scheduler.step()
+
+            policy.eval()
+            print(f"[GauDP][policy] epoch={epoch + 1}/{epochs} validation started", flush=True)
+            val_sums: dict[str, float] = {}
+            val_count = 0
+            val_started = time.monotonic()
+            with torch.no_grad():
+                for batch_index, batch in enumerate(val_loader):
+                    loss, batch_metrics = policy.compute_loss(
+                        _to_device(batch, device), return_metrics=True
+                    )
+                    batch_loss = float(loss)
+                    _accumulate(val_sums, batch_metrics)
+                    val_count += 1
+                    completed = batch_index + 1
+                    if _should_log_batch(completed, val_batches, args.log_every):
+                        progress = {
+                            "val/batch_loss": batch_loss,
+                            **{f"val/batch/{key}": value for key, value in batch_metrics.items()},
+                            **_progress_metrics(completed, val_batches, val_started, "val"),
+                        }
+                        _print_batch_progress(epoch, epochs, "val", progress)
+                    if args.debug:
+                        break
+            metrics = {
+                "record_type": "epoch",
+                "epoch": epoch,
+                "lr": step_lr,
+                "performance/epoch_seconds": time.monotonic() - epoch_started,
+                **normalization_metrics,
+                "train/loss": train_sums.get("diffusion/noise_mse", 0.0) / max(1, train_count),
+                "val/loss": val_sums.get("diffusion/noise_mse", 0.0) / max(1, val_count),
+                **{f"train/{key}": value / max(1, train_count) for key, value in train_sums.items()},
+                **{f"val/{key}": value / max(1, val_count) for key, value in val_sums.items()},
+            }
+            print(f"[GauDP][policy] saving last checkpoint to {args.output / 'last.ckpt'}", flush=True)
+            save_started = time.monotonic()
+            _save(
+                args.output / "last.ckpt", policy, optimizer, scheduler, epoch, metrics,
+                args.gaussian, train_data.camera_order, ema,
+            )
+            print(
+                f"[GauDP][policy] saved last checkpoint in "
+                f"{_format_duration(time.monotonic() - save_started)}",
+                flush=True,
+            )
+            if metrics["val/loss"] < best:
+                best = metrics["val/loss"]
+                print(f"[GauDP][policy] new best val/loss={best:.6f}; saving best checkpoint", flush=True)
+                best_save_started = time.monotonic()
+                _save(
+                    args.output / "best.ckpt", policy, optimizer, scheduler, epoch, metrics,
+                    args.gaussian, train_data.camera_order, ema,
+                )
+                print(
+                    f"[GauDP][policy] saved best checkpoint in "
+                    f"{_format_duration(time.monotonic() - best_save_started)}",
+                    flush=True,
+                )
+            logger.log(metrics, step=global_step)
+            print(f"[GauDP][policy] step={global_step} {metrics}", flush=True)
+
+
+if __name__ == "__main__":
+    main()

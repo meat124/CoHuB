@@ -1,0 +1,562 @@
+#usda 1.0
+(
+    defaultPrim = "PourTote"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "PourTote" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+)
+{
+    bool physics:kinematicEnabled = 0
+    float physics:mass = 2.5
+    bool physics:rigidBodyEnabled = 1
+
+    def Xform "Visual" (
+        prepend references = @produce/vessel.usda@
+    )
+    {
+        float3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (-0, -0, -0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+
+        over "part_1" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+        )
+        {
+            uniform token physics:approximation = "convexHull"
+        }
+
+        over "part_2" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+        )
+        {
+            uniform token physics:approximation = "convexHull"
+        }
+    }
+
+    def Mesh "Collision_Base" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.27979216, -0.27979216, 0), (0.27979216, 0.27979216, 0.015)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [30, 62, 61, 30, 61, 29, 21, 53, 52, 21, 52, 20, 19, 52, 51, 19, 20, 52, 19, 51, 50, 19, 50, 18, 17, 49, 48, 17, 48, 16, 17, 50, 49, 17, 18, 50, 1, 33, 32, 1, 32, 0, 28, 29, 61, 28, 61, 60, 24, 56, 55, 24, 55, 23, 31, 32, 63, 31, 0, 32, 31, 63, 62, 31, 62, 30, 22, 55, 54, 22, 23, 55, 22, 54, 53, 22, 53, 21, 11, 44, 43, 11, 12, 44, 5, 38, 37, 5, 6, 38, 7, 39, 38, 7, 38, 6, 2, 35, 34, 2, 3, 35, 2, 34, 33, 2, 33, 1, 27, 59, 58, 27, 58, 26, 27, 60, 59, 27, 28, 60, 25, 58, 57, 25, 26, 58, 25, 57, 56, 25, 56, 24, 10, 42, 41, 10, 41, 9, 10, 43, 42, 10, 11, 43, 13, 44, 12, 13, 45, 44, 13, 46, 45, 13, 14, 46, 15, 16, 48, 15, 48, 47, 15, 47, 46, 15, 46, 14, 4, 35, 3, 4, 36, 35, 4, 5, 37, 4, 37, 36, 8, 27, 26, 8, 23, 22, 8, 10, 9, 8, 17, 16, 8, 21, 20, 8, 1, 0, 8, 3, 2, 8, 20, 19, 8, 12, 11, 8, 30, 29, 8, 0, 31, 8, 6, 5, 8, 19, 18, 8, 18, 17, 8, 13, 12, 8, 7, 6, 8, 29, 28, 8, 24, 23, 8, 31, 30, 8, 22, 21, 8, 26, 25, 8, 16, 15, 8, 4, 3, 8, 2, 1, 8, 28, 27, 8, 25, 24, 8, 11, 10, 8, 14, 13, 8, 15, 14, 8, 5, 4, 8, 9, 41, 8, 41, 40, 8, 39, 7, 8, 40, 39, 95, 63, 32, 95, 32, 64, 80, 47, 48, 80, 79, 47, 80, 48, 49, 80, 49, 81, 82, 49, 50, 82, 81, 49, 78, 46, 47, 78, 47, 79, 78, 45, 46, 78, 77, 45, 76, 44, 45, 76, 45, 77, 83, 50, 51, 83, 82, 50, 75, 43, 44, 75, 44, 76, 84, 51, 52, 84, 83, 51, 84, 52, 53, 84, 53, 85, 74, 42, 43, 74, 43, 75, 74, 41, 42, 74, 73, 41, 86, 53, 54, 86, 85, 53, 86, 54, 55, 86, 55, 87, 72, 40, 41, 72, 41, 73, 72, 39, 40, 72, 71, 39, 88, 55, 56, 88, 87, 55, 88, 56, 57, 88, 57, 89, 90, 57, 58, 90, 89, 57, 70, 38, 39, 70, 39, 71, 70, 37, 38, 70, 69, 37, 91, 58, 59, 91, 90, 58, 68, 36, 37, 68, 37, 69, 68, 35, 36, 68, 67, 35, 65, 32, 33, 65, 64, 32, 92, 59, 60, 92, 91, 59, 66, 34, 35, 66, 35, 67, 66, 33, 34, 66, 65, 33, 93, 60, 61, 93, 92, 60, 94, 95, 64, 94, 79, 80, 94, 78, 79, 94, 81, 82, 94, 80, 81, 94, 76, 77, 94, 77, 78, 94, 82, 83, 94, 75, 76, 94, 83, 84, 94, 74, 75, 94, 85, 86, 94, 84, 85, 94, 72, 73, 94, 73, 74, 94, 87, 88, 94, 86, 87, 94, 70, 71, 94, 71, 72, 94, 89, 90, 94, 88, 89, 94, 68, 69, 94, 69, 70, 94, 90, 91, 94, 64, 65, 94, 67, 68, 94, 91, 92, 94, 66, 67, 94, 65, 66, 94, 92, 93, 94, 62, 63, 94, 63, 95, 94, 61, 62, 94, 93, 61]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.2672172, 0, 0), (0.2620827, 0.05213149, 0), (0.2468765, 0.10225959, 0), (0.22218297, 0.14845791, 0), (0.18895109, 0.18895109, 0), (0.14845791, 0.22218297, 0), (0.10225959, 0.2468765, 0), (0.05213149, 0.2620827, 0), (1.6362334e-17, 0.2672172, 0), (-0.05213149, 0.2620827, 0), (-0.10225959, 0.2468765, 0), (-0.14845791, 0.22218297, 0), (-0.18895109, 0.18895109, 0), (-0.22218297, 0.14845791, 0), (-0.2468765, 0.10225959, 0), (-0.2620827, 0.05213149, 0), (-0.2672172, 3.2724668e-17, 0), (-0.2620827, -0.05213149, 0), (-0.2468765, -0.10225959, 0), (-0.22218297, -0.14845791, 0), (-0.18895109, -0.18895109, 0), (-0.14845791, -0.22218297, 0), (-0.10225959, -0.2468765, 0), (-0.05213149, -0.2620827, 0), (-4.9087002e-17, -0.2672172, 0), (0.05213149, -0.2620827, 0), (0.10225959, -0.2468765, 0), (0.14845791, -0.22218297, 0), (0.18895109, -0.18895109, 0), (0.22218297, -0.14845791, 0), (0.2468765, -0.10225959, 0), (0.2620827, -0.05213149, 0), (0.27979216, 0, 0.01), (0.27441603, 0.05458474, 0.01), (0.25849426, 0.107071824, 0.01), (0.23263867, 0.15544419, 0.01), (0.19784293, 0.19784293, 0.01), (0.15544419, 0.23263867, 0.01), (0.107071824, 0.25849426, 0.01), (0.05458474, 0.27441603, 0.01), (1.7132328e-17, 0.27979216, 0.01), (-0.05458474, 0.27441603, 0.01), (-0.107071824, 0.25849426, 0.01), (-0.15544419, 0.23263867, 0.01), (-0.19784293, 0.19784293, 0.01), (-0.23263867, 0.15544419, 0.01), (-0.25849426, 0.107071824, 0.01), (-0.27441603, 0.05458474, 0.01), (-0.27979216, 3.4264657e-17, 0.01), (-0.27441603, -0.05458474, 0.01), (-0.25849426, -0.107071824, 0.01), (-0.23263867, -0.15544419, 0.01), (-0.19784293, -0.19784293, 0.01), (-0.15544419, -0.23263867, 0.01), (-0.107071824, -0.25849426, 0.01), (-0.05458474, -0.27441603, 0.01), (-5.1396986e-17, -0.27979216, 0.01), (0.05458474, -0.27441603, 0.01), (0.107071824, -0.25849426, 0.01), (0.15544419, -0.23263867, 0.01), (0.19784293, -0.19784293, 0.01), (0.23263867, -0.15544419, 0.01), (0.25849426, -0.107071824, 0.01), (0.27441603, -0.05458474, 0.01), (0.27558178, 0, 0.015), (0.27028653, 0.053763334, 0.015), (0.25460434, 0.10546058, 0.015), (0.22913787, 0.15310502, 0.015), (0.19486573, 0.19486573, 0.015), (0.15310502, 0.22913787, 0.015), (0.10546058, 0.25460434, 0.015), (0.053763334, 0.27028653, 0.015), (1.6874516e-17, 0.27558178, 0.015), (-0.053763334, 0.27028653, 0.015), (-0.10546058, 0.25460434, 0.015), (-0.15310502, 0.22913787, 0.015), (-0.19486573, 0.19486573, 0.015), (-0.22913787, 0.15310502, 0.015), (-0.25460434, 0.10546058, 0.015), (-0.27028653, 0.053763334, 0.015), (-0.27558178, 3.3749032e-17, 0.015), (-0.27028653, -0.053763334, 0.015), (-0.25460434, -0.10546058, 0.015), (-0.22913787, -0.15310502, 0.015), (-0.19486573, -0.19486573, 0.015), (-0.15310502, -0.22913787, 0.015), (-0.10546058, -0.25460434, 0.015), (-0.053763334, -0.27028653, 0.015), (-5.062355e-17, -0.27558178, 0.015), (0.053763334, -0.27028653, 0.015), (0.10546058, -0.25460434, 0.015), (0.15310502, -0.22913787, 0.015), (0.19486573, -0.19486573, 0.015), (0.22913787, -0.15310502, 0.015), (0.25460434, -0.10546058, 0.015), (0.27028653, -0.053763334, 0.015)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_00" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.23817317, 0, 0.015), (0.3400957, 0.06634938, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.24283926, 0, 0.015), (0.23817317, 0.04737559, 0.015), (0.27558178, 0, 0.015), (0.27028653, 0.053763334, 0.015), (0.3165026, 0, 0.15769146), (0.31042108, 0.061746594, 0.15769146), (0.3400957, 0, 0.15769146), (0.33356085, 0.06634938, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_01" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.22435422, 0.04737559, 0.015), (0.33356085, 0.13014899, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.23817317, 0.04737559, 0.015), (0.22435422, 0.09293056, 0.015), (0.27028653, 0.053763334, 0.015), (0.25460434, 0.10546058, 0.015), (0.31042108, 0.061746594, 0.15769146), (0.29241025, 0.1211203, 0.15769146), (0.33356085, 0.06634938, 0.15769146), (0.31420746, 0.13014899, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_02" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.20191346, 0.09293056, 0.015), (0.31420746, 0.18894705, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.22435422, 0.09293056, 0.015), (0.20191346, 0.13491426, 0.015), (0.25460434, 0.10546058, 0.015), (0.22913787, 0.15310502, 0.015), (0.29241025, 0.1211203, 0.15769146), (0.26316229, 0.17583942, 0.15769146), (0.31420746, 0.13014899, 0.15769146), (0.28277925, 0.18894705, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_03" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.1717133, 0.13491426, 0.015), (0.28277925, 0.24048398, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.20191346, 0.13491426, 0.015), (0.1717133, 0.1717133, 0.015), (0.22913787, 0.15310502, 0.015), (0.19486573, 0.19486573, 0.015), (0.26316229, 0.17583942, 0.15769146), (0.22380114, 0.22380114, 0.15769146), (0.28277925, 0.18894705, 0.15769146), (0.24048398, 0.24048398, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_04" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.13491426, 0.1717133, 0.015), (0.24048398, 0.28277925, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.1717133, 0.1717133, 0.015), (0.13491426, 0.20191346, 0.015), (0.19486573, 0.19486573, 0.015), (0.15310502, 0.22913787, 0.015), (0.22380114, 0.22380114, 0.15769146), (0.17583942, 0.26316229, 0.15769146), (0.24048398, 0.24048398, 0.15769146), (0.18894705, 0.28277925, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_05" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.09293056, 0.20191346, 0.015), (0.18894705, 0.31420746, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.13491426, 0.20191346, 0.015), (0.09293056, 0.22435422, 0.015), (0.15310502, 0.22913787, 0.015), (0.10546058, 0.25460434, 0.015), (0.17583942, 0.26316229, 0.15769146), (0.1211203, 0.29241025, 0.15769146), (0.18894705, 0.28277925, 0.15769146), (0.13014899, 0.31420746, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_06" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.04737559, 0.22435422, 0.015), (0.13014899, 0.33356085, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.09293056, 0.22435422, 0.015), (0.04737559, 0.23817317, 0.015), (0.10546058, 0.25460434, 0.015), (0.053763334, 0.27028653, 0.015), (0.1211203, 0.29241025, 0.15769146), (0.061746594, 0.31042108, 0.15769146), (0.13014899, 0.31420746, 0.15769146), (0.06634938, 0.33356085, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_07" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(1.4869615e-17, 0.23817317, 0.015), (0.06634938, 0.3400957, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.04737559, 0.23817317, 0.015), (1.4869615e-17, 0.24283926, 0.015), (0.053763334, 0.27028653, 0.015), (1.6874516e-17, 0.27558178, 0.015), (0.061746594, 0.31042108, 0.15769146), (1.9380195e-17, 0.3165026, 0.15769146), (0.06634938, 0.33356085, 0.15769146), (2.0824856e-17, 0.3400957, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_08" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.06634938, 0.23817317, 0.015), (2.0824856e-17, 0.3400957, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 4, 6, 5, 6, 7, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 1, 2, 0, 1, 3, 2, 1, 4, 5, 1, 0, 4, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(1.4869615e-17, 0.24283926, 0.015), (-0.04737559, 0.23817317, 0.015), (1.6874516e-17, 0.27558178, 0.015), (-0.053763334, 0.27028653, 0.015), (1.9380195e-17, 0.3165026, 0.15769146), (-0.061746594, 0.31042108, 0.15769146), (2.0824856e-17, 0.3400957, 0.15769146), (-0.06634938, 0.33356085, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_09" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.13014899, 0.22435422, 0.015), (-0.04737559, 0.33356085, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.04737559, 0.23817317, 0.015), (-0.09293056, 0.22435422, 0.015), (-0.053763334, 0.27028653, 0.015), (-0.10546058, 0.25460434, 0.015), (-0.061746594, 0.31042108, 0.15769146), (-0.1211203, 0.29241025, 0.15769146), (-0.06634938, 0.33356085, 0.15769146), (-0.13014899, 0.31420746, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_10" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.18894705, 0.20191346, 0.015), (-0.09293056, 0.31420746, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.09293056, 0.22435422, 0.015), (-0.13491426, 0.20191346, 0.015), (-0.10546058, 0.25460434, 0.015), (-0.15310502, 0.22913787, 0.015), (-0.1211203, 0.29241025, 0.15769146), (-0.17583942, 0.26316229, 0.15769146), (-0.13014899, 0.31420746, 0.15769146), (-0.18894705, 0.28277925, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_11" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.24048398, 0.1717133, 0.015), (-0.13491426, 0.28277925, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.13491426, 0.20191346, 0.015), (-0.1717133, 0.1717133, 0.015), (-0.15310502, 0.22913787, 0.015), (-0.19486573, 0.19486573, 0.015), (-0.17583942, 0.26316229, 0.15769146), (-0.22380114, 0.22380114, 0.15769146), (-0.18894705, 0.28277925, 0.15769146), (-0.24048398, 0.24048398, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_12" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.28277925, 0.13491426, 0.015), (-0.1717133, 0.24048398, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.1717133, 0.1717133, 0.015), (-0.20191346, 0.13491426, 0.015), (-0.19486573, 0.19486573, 0.015), (-0.22913787, 0.15310502, 0.015), (-0.22380114, 0.22380114, 0.15769146), (-0.26316229, 0.17583942, 0.15769146), (-0.24048398, 0.24048398, 0.15769146), (-0.28277925, 0.18894705, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_13" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.31420746, 0.09293056, 0.015), (-0.20191346, 0.18894705, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 4, 6, 5, 6, 7, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 1, 2, 0, 1, 3, 2, 1, 4, 5, 1, 0, 4, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.20191346, 0.13491426, 0.015), (-0.22435422, 0.09293056, 0.015), (-0.22913787, 0.15310502, 0.015), (-0.25460434, 0.10546058, 0.015), (-0.26316229, 0.17583942, 0.15769146), (-0.29241025, 0.1211203, 0.15769146), (-0.28277925, 0.18894705, 0.15769146), (-0.31420746, 0.13014899, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_14" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.33356085, 0.04737559, 0.015), (-0.22435422, 0.13014899, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 4, 6, 5, 6, 7, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 1, 2, 0, 1, 3, 2, 1, 4, 5, 1, 0, 4, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.22435422, 0.09293056, 0.015), (-0.23817317, 0.04737559, 0.015), (-0.25460434, 0.10546058, 0.015), (-0.27028653, 0.053763334, 0.015), (-0.29241025, 0.1211203, 0.15769146), (-0.31042108, 0.061746594, 0.15769146), (-0.31420746, 0.13014899, 0.15769146), (-0.33356085, 0.06634938, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_15" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.3400957, 2.973923e-17, 0.015), (-0.23817317, 0.06634938, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.23817317, 0.04737559, 0.015), (-0.24283926, 2.973923e-17, 0.015), (-0.27028653, 0.053763334, 0.015), (-0.27558178, 3.3749032e-17, 0.015), (-0.31042108, 0.061746594, 0.15769146), (-0.3165026, 3.876039e-17, 0.15769146), (-0.33356085, 0.06634938, 0.15769146), (-0.3400957, 4.1649712e-17, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_16" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.3400957, -0.06634938, 0.015), (-0.23817317, 4.1649712e-17, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.24283926, 2.973923e-17, 0.015), (-0.23817317, -0.04737559, 0.015), (-0.27558178, 3.3749032e-17, 0.015), (-0.27028653, -0.053763334, 0.015), (-0.3165026, 3.876039e-17, 0.15769146), (-0.31042108, -0.061746594, 0.15769146), (-0.3400957, 4.1649712e-17, 0.15769146), (-0.33356085, -0.06634938, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_17" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.33356085, -0.13014899, 0.015), (-0.22435422, -0.04737559, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.23817317, -0.04737559, 0.015), (-0.22435422, -0.09293056, 0.015), (-0.27028653, -0.053763334, 0.015), (-0.25460434, -0.10546058, 0.015), (-0.31042108, -0.061746594, 0.15769146), (-0.29241025, -0.1211203, 0.15769146), (-0.33356085, -0.06634938, 0.15769146), (-0.31420746, -0.13014899, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_18" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.31420746, -0.18894705, 0.015), (-0.20191346, -0.09293056, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.22435422, -0.09293056, 0.015), (-0.20191346, -0.13491426, 0.015), (-0.25460434, -0.10546058, 0.015), (-0.22913787, -0.15310502, 0.015), (-0.29241025, -0.1211203, 0.15769146), (-0.26316229, -0.17583942, 0.15769146), (-0.31420746, -0.13014899, 0.15769146), (-0.28277925, -0.18894705, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_19" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.28277925, -0.24048398, 0.015), (-0.1717133, -0.13491426, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.20191346, -0.13491426, 0.015), (-0.1717133, -0.1717133, 0.015), (-0.22913787, -0.15310502, 0.015), (-0.19486573, -0.19486573, 0.015), (-0.26316229, -0.17583942, 0.15769146), (-0.22380114, -0.22380114, 0.15769146), (-0.28277925, -0.18894705, 0.15769146), (-0.24048398, -0.24048398, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_20" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.24048398, -0.28277925, 0.015), (-0.13491426, -0.1717133, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.1717133, -0.1717133, 0.015), (-0.13491426, -0.20191346, 0.015), (-0.19486573, -0.19486573, 0.015), (-0.15310502, -0.22913787, 0.015), (-0.22380114, -0.22380114, 0.15769146), (-0.17583942, -0.26316229, 0.15769146), (-0.24048398, -0.24048398, 0.15769146), (-0.18894705, -0.28277925, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_21" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.18894705, -0.31420746, 0.015), (-0.09293056, -0.20191346, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.13491426, -0.20191346, 0.015), (-0.09293056, -0.22435422, 0.015), (-0.15310502, -0.22913787, 0.015), (-0.10546058, -0.25460434, 0.015), (-0.17583942, -0.26316229, 0.15769146), (-0.1211203, -0.29241025, 0.15769146), (-0.18894705, -0.28277925, 0.15769146), (-0.13014899, -0.31420746, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_22" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.13014899, -0.33356085, 0.015), (-0.04737559, -0.22435422, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 2, 6, 4, 2, 4, 0, 3, 5, 7, 3, 1, 5, 3, 0, 1, 3, 2, 0, 3, 7, 6, 3, 6, 2]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.09293056, -0.22435422, 0.015), (-0.04737559, -0.23817317, 0.015), (-0.10546058, -0.25460434, 0.015), (-0.053763334, -0.27028653, 0.015), (-0.1211203, -0.29241025, 0.15769146), (-0.061746594, -0.31042108, 0.15769146), (-0.13014899, -0.31420746, 0.15769146), (-0.06634938, -0.33356085, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_23" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.06634938, -0.3400957, 0.015), (-4.4608848e-17, -0.23817317, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 1, 0, 5, 0, 4, 5, 6, 7, 5, 4, 6, 3, 5, 7, 3, 1, 5, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.04737559, -0.23817317, 0.015), (-4.4608848e-17, -0.24283926, 0.015), (-0.053763334, -0.27028653, 0.015), (-5.062355e-17, -0.27558178, 0.015), (-0.061746594, -0.31042108, 0.15769146), (-5.814058e-17, -0.3165026, 0.15769146), (-0.06634938, -0.33356085, 0.15769146), (-6.247457e-17, -0.3400957, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_24" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-6.247457e-17, -0.3400957, 0.015), (0.06634938, -0.23817317, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 6, 7, 5, 4, 6, 5, 1, 0, 5, 0, 4, 3, 1, 5, 3, 5, 7, 2, 4, 0, 2, 6, 4, 2, 7, 6, 2, 3, 7, 2, 0, 1, 2, 1, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-4.4608848e-17, -0.24283926, 0.015), (0.04737559, -0.23817317, 0.015), (-5.062355e-17, -0.27558178, 0.015), (0.053763334, -0.27028653, 0.015), (-5.814058e-17, -0.3165026, 0.15769146), (0.061746594, -0.31042108, 0.15769146), (-6.247457e-17, -0.3400957, 0.15769146), (0.06634938, -0.33356085, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_25" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.04737559, -0.33356085, 0.015), (0.13014899, -0.22435422, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.04737559, -0.23817317, 0.015), (0.09293056, -0.22435422, 0.015), (0.053763334, -0.27028653, 0.015), (0.10546058, -0.25460434, 0.015), (0.061746594, -0.31042108, 0.15769146), (0.1211203, -0.29241025, 0.15769146), (0.06634938, -0.33356085, 0.15769146), (0.13014899, -0.31420746, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_26" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.09293056, -0.31420746, 0.015), (0.18894705, -0.20191346, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.09293056, -0.22435422, 0.015), (0.13491426, -0.20191346, 0.015), (0.10546058, -0.25460434, 0.015), (0.15310502, -0.22913787, 0.015), (0.1211203, -0.29241025, 0.15769146), (0.17583942, -0.26316229, 0.15769146), (0.13014899, -0.31420746, 0.15769146), (0.18894705, -0.28277925, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_27" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.13491426, -0.28277925, 0.015), (0.24048398, -0.1717133, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.13491426, -0.20191346, 0.015), (0.1717133, -0.1717133, 0.015), (0.15310502, -0.22913787, 0.015), (0.19486573, -0.19486573, 0.015), (0.17583942, -0.26316229, 0.15769146), (0.22380114, -0.22380114, 0.15769146), (0.18894705, -0.28277925, 0.15769146), (0.24048398, -0.24048398, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_28" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.1717133, -0.24048398, 0.015), (0.28277925, -0.13491426, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.1717133, -0.1717133, 0.015), (0.20191346, -0.13491426, 0.015), (0.19486573, -0.19486573, 0.015), (0.22913787, -0.15310502, 0.015), (0.22380114, -0.22380114, 0.15769146), (0.26316229, -0.17583942, 0.15769146), (0.24048398, -0.24048398, 0.15769146), (0.28277925, -0.18894705, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_29" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.20191346, -0.18894705, 0.015), (0.31420746, -0.09293056, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.20191346, -0.13491426, 0.015), (0.22435422, -0.09293056, 0.015), (0.22913787, -0.15310502, 0.015), (0.25460434, -0.10546058, 0.015), (0.26316229, -0.17583942, 0.15769146), (0.29241025, -0.1211203, 0.15769146), (0.28277925, -0.18894705, 0.15769146), (0.31420746, -0.13014899, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_30" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.22435422, -0.13014899, 0.015), (0.33356085, -0.04737559, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [2, 6, 4, 2, 4, 0, 5, 4, 6, 5, 6, 7, 3, 6, 2, 3, 7, 6, 1, 0, 4, 1, 4, 5, 1, 2, 0, 1, 3, 2, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.22435422, -0.09293056, 0.015), (0.23817317, -0.04737559, 0.015), (0.25460434, -0.10546058, 0.015), (0.27028653, -0.053763334, 0.015), (0.29241025, -0.1211203, 0.15769146), (0.31042108, -0.061746594, 0.15769146), (0.31420746, -0.13014899, 0.15769146), (0.33356085, -0.06634938, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "Collision_Wall_31" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        float3[] extent = [(0.23817317, -0.06634938, 0.015), (0.3400957, -5.947846e-17, 0.15769146)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [5, 4, 6, 5, 6, 7, 2, 6, 4, 2, 4, 0, 2, 7, 6, 2, 3, 7, 1, 2, 0, 1, 3, 2, 1, 4, 5, 1, 0, 4, 1, 5, 7, 1, 7, 3]
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.23817317, -0.04737559, 0.015), (0.24283926, -5.947846e-17, 0.015), (0.27028653, -0.053763334, 0.015), (0.27558178, -6.7498064e-17, 0.015), (0.31042108, -0.061746594, 0.15769146), (0.3165026, -7.752078e-17, 0.15769146), (0.33356085, -0.06634938, 0.15769146), (0.3400957, -8.3299424e-17, 0.15769146)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Material "grip_steel"
+    {
+        token outputs:surface.connect = </PourTote/grip_steel/Surface.outputs:surface>
+
+        def Shader "Surface"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.22, 0.23, 0.25)
+            float inputs:metallic = 0.9
+            float inputs:roughness = 0.35
+            token outputs:surface
+        }
+    }
+
+    def Capsule "grip_a" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        uniform token axis = "Y"
+        float3[] extent = [(-0.014, -0.08, -0.014), (0.014, 0.08, 0.014)]
+        double height = 0.132
+        rel material:binding = </PourTote/grip_steel>
+        bool physics:collisionEnabled = 1
+        double radius = 0.014
+        double3 xformOp:translate = (-0.393, 0, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "grip_a_post_0" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </PourTote/grip_steel>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.08659751, 0.02, 0.02)
+        double3 xformOp:translate = (-0.3497012462867681, -0.066, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "grip_a_post_1" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </PourTote/grip_steel>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.08659751, 0.02, 0.02)
+        double3 xformOp:translate = (-0.3497012462867681, 0.066, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Capsule "grip_b" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        uniform token axis = "Y"
+        float3[] extent = [(-0.014, -0.08, -0.014), (0.014, 0.08, 0.014)]
+        double height = 0.132
+        rel material:binding = </PourTote/grip_steel>
+        bool physics:collisionEnabled = 1
+        double radius = 0.014
+        double3 xformOp:translate = (0.393, 0, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Cube "grip_b_post_0" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </PourTote/grip_steel>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.08659751, 0.02, 0.02)
+        double3 xformOp:translate = (0.3497012462867681, -0.066, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "grip_b_post_1" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        rel material:binding = </PourTote/grip_steel>
+        bool physics:collisionEnabled = 1
+        double size = 1
+        float3 xformOp:scale = (0.08659751, 0.02, 0.02)
+        double3 xformOp:translate = (0.3497012462867681, 0.066, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+}
+

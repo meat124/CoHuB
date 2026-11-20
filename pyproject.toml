@@ -1,0 +1,35 @@
+[project]
+name = "cohub"
+version = "0.1.0"
+description = "CoHuB: a simulation benchmark for multi-humanoid collaboration -- Unitree G1 humanoids on Isaac Lab, VR-teleoperated demonstrations, phase-wise evaluation"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # isaaclab, isaaclab_tasks and isaaclab_teleop are installed editable from external/IsaacLab
+    "gymnasium",
+    "numpy",
+    "torch",
+    "h5py",
+    "pyyaml",
+    "imageio",  # demo MP4 encoding (cohub.recording.demo_video)
+    "imageio-ffmpeg",  # the libx264 writer imageio drives
+    "pyarrow",  # LeRobot parquet export (scripts/export/export_lerobot.py)
+    "hydra-core",  # imported by isaaclab_tasks.utils.parse_cfg
+    # obs video codec and the eval client's frames. Below 19: with PyAV 19.0.0 loaded, the
+    # ffmpeg child imageio forks for a video writer never reaches exec, and an
+    # evaluation that records video waits on it forever.
+    "av<19",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "source"}
+
+[tool.setuptools.packages.find]
+where = ["source"]
+include = ["cohub*"]
+
+[tool.setuptools.package-data]
+cohub = ["recording/*.yaml"]

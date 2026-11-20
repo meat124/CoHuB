@@ -1,0 +1,24 @@
+# LatentToM settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+# Both arms train in one run. LATENTTOM_EXTRA takes any further hydra override.
+
+# ---- run identity -----------------------------------------------------------
+CKPT_TAG: cohub2                   # names the run directory, the eval directory and the wandb id
+WANDB_PROJECT: CoHuB_LatentToM
+
+# ---- training: budget -------------------------------------------------------
+LATENTTOM_EPOCHS: 1000
+LATENTTOM_CKPT_EVERY: 10           # epochs between resumable checkpoints
+LATENTTOM_BATCH_SIZE: 32
+LATENTTOM_SNAPSHOT_EVERY: 250      # epochs between weights-only snapshots, the ones evaluated
+
+# ---- training: the recipe ----------------------------------------------------
+LATENTTOM_OBS_STEPS: 1             # observation steps the policy reads
+LATENTTOM_STATE_NOISE: 0.02        # training proprio noise, x half each dimension's demonstration range
+
+# ---- evaluation ------------------------------------------------------------
+COHUB_EVAL_CKPTS: 1000             # snapshots to evaluate, by epoch
+COHUB_EVAL_EPISODES: 100           # per task
+# Render once every N steps. Must divide the executed action chunk (20 steps).
+EVAL_OBS_STRIDE: 20
+COHUB_EVAL_SEED: 1                 # episode i runs at seed COHUB_EVAL_SEED + i

@@ -1,0 +1,234 @@
+#usda 1.0
+(
+    customLayerData = {
+        string modifiedFor = "CoHuB: liftable, hangable framed painting for the FrameHang task"
+    }
+    defaultPrim = "GrandeJatteFrame"
+    doc = "A framed painting two G1s can lift and hang, for CoHuB's FrameHang task. Poly Haven's fancy_picture_frame_01 (CC0) at 1.9 scale, 1.145757 x 0.881839 m -- the same gilt moulding the gallery's other pictures hang in. Its canvas mesh is hidden and an opaque quad on the same plane carries the public-domain Wikimedia scan of Seurat's A Sunday Afternoon on the Island of La Grande Jatte, already mounted on a mat card at the canvas's proportions so the painting keeps its own shape. The one thing added to the scan is a hanging loop standing on the top rail, within the frame's own depth. There are no carrying handles: an operator takes the moulding's own side rail, at the height geometry.GRIP_SITES puts it. The picture once carried the bars in a `handles` variant set; the variant set is gone, and the published demonstrations were recorded against a picture that had them. Authored against geometry.py -- keep the two in step by hand."
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "GrandeJatteFrame" (
+    apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+)
+{
+    bool physics:kinematicEnabled = 0
+    # Authored so Isaac Lab's UsdFileCfg can set a mass at all: its
+    # `modify_mass_properties` only touches prims that already carry the
+    # schema, and without it PhysX falls back to volume x default density.
+    float physics:mass = 4
+
+    def Scope "Looks"
+    {
+        def Material "Moulding"
+        {
+            token outputs:surface.connect = </GrandeJatteFrame/Looks/Moulding/Shader.outputs:surface>
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.62, 0.47, 0.2)
+                float inputs:metallic = 0.7
+                float inputs:roughness = 0.32
+                token outputs:surface
+            }
+        }
+
+        def Material "Backing"
+        {
+            token outputs:surface.connect = </GrandeJatteFrame/Looks/Backing/Shader.outputs:surface>
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.33, 0.29, 0.25)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.9
+                token outputs:surface
+            }
+        }
+
+        def Material "ArtworkOverlay"
+        {
+            token outputs:surface.connect = </GrandeJatteFrame/Looks/ArtworkOverlay/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor.connect = </GrandeJatteFrame/Looks/ArtworkOverlay/Texture.outputs:rgb>
+                float inputs:metallic = 0.0
+                float inputs:roughness = 0.62
+                float inputs:opacity = 1.0
+                token outputs:surface
+            }
+
+            def Shader "Texture"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @./seurat_grande_jatte_matted.jpg@
+                token inputs:sourceColorSpace = "sRGB"
+                token inputs:wrapS = "clamp"
+                token inputs:wrapT = "clamp"
+                float2 inputs:st.connect = </GrandeJatteFrame/Looks/ArtworkOverlay/STReader.outputs:result>
+                float3 outputs:rgb
+            }
+
+            def Shader "STReader"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                token inputs:varname = "st"
+                float2 outputs:result
+            }
+        }
+
+    }
+
+    def Xform "picture" (
+        prepend references = @./polyhaven/fancy_picture_frame_01/fancy_picture_frame_01_1k.usdc@
+    )
+    {
+        # The translate re-centres bounds that are not centred on the asset's
+        # origin; the scale is what makes a 0.60 m frame the one two robots
+        # carry between them.
+        float3 xformOp:scale = (1.9, 1.9, 1.9)
+        double3 xformOp:translate = (0, 0.022601, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+
+        # The scan's own canvas is hidden and the painting below is drawn in its
+        # place, on the same plane and to the same extents plus a lip overlap.
+        over "fancy_picture_frame_01_canvas"
+        {
+            token visibility = "invisible"
+        }
+    }
+
+    # The painting.  Its edges run under the moulding rather than butting
+    # against it, so there is no join to find from any angle.
+    def Mesh "ArtworkOverlay" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        point3f[] points = [
+            (-0.51811, 0.010101, -0.387175),
+            (0.516702, 0.010101, -0.387175),
+            (0.516702, 0.010101, 0.383372),
+            (-0.51811, 0.010101, 0.383372)
+        ]
+        int[] faceVertexCounts = [4]
+        int[] faceVertexIndices = [0, 1, 2, 3]
+        texCoord2f[] primvars:st = [(0, 0), (1, 0), (1, 1), (0, 1)] (
+            interpolation = "vertex"
+        )
+        rel material:binding = </GrandeJatteFrame/Looks/ArtworkOverlay>
+    }
+
+    # The scan is a shell, so the back of the canvas is a hole with the
+    # inside of the moulding visible through it.  This closes it.
+    def Cube "ArtworkBacking" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.517406, 0.002, 0.385274)
+        double3 xformOp:translate = (-0.000704, 0.014101, -0.001902)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        rel material:binding = </GrandeJatteFrame/Looks/Backing>
+    }
+
+    # --- the hanging loop ----------------------------------------------
+    def Cube "loop_base" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.036, 0.018993, 0.005)
+        double3 xformOp:translate = (0, 0, 0.43592)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        rel material:binding = </GrandeJatteFrame/Looks/Moulding>
+    }
+    def Cube "loop_left" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.005, 0.018993, 0.021)
+        double3 xformOp:translate = (-0.031, 0, 0.46192)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        rel material:binding = </GrandeJatteFrame/Looks/Moulding>
+    }
+    def Cube "loop_right" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.005, 0.018993, 0.021)
+        double3 xformOp:translate = (0.031, 0, 0.46192)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        rel material:binding = </GrandeJatteFrame/Looks/Moulding>
+    }
+    def Cube "loop_cap" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.036, 0.018993, 0.005)
+        double3 xformOp:translate = (0, 0, 0.48792)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        rel material:binding = </GrandeJatteFrame/Looks/Moulding>
+    }
+
+    # --- collision -----------------------------------------------------
+    # One slab for the painting, plus the loop as the boxes it is drawn as.
+    # The moulding is a mesh and nothing is gained by colliding with it -- a
+    # hand closes on the side rail *against* the slab, which is what carries
+    # the picture now that there are no bars to close around.
+    def Cube "collider_slab" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.572878, 0.018993, 0.44092)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        token visibility = "invisible"
+    }
+    def Cube "collider_loop_base" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.036, 0.018993, 0.005)
+        double3 xformOp:translate = (0, 0, 0.43592)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        token visibility = "invisible"
+    }
+    def Cube "collider_loop_left" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.005, 0.018993, 0.021)
+        double3 xformOp:translate = (-0.031, 0, 0.46192)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        token visibility = "invisible"
+    }
+    def Cube "collider_loop_right" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.005, 0.018993, 0.021)
+        double3 xformOp:translate = (0.031, 0, 0.46192)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        token visibility = "invisible"
+    }
+    def Cube "collider_loop_cap" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double size = 2
+        float3 xformOp:scale = (0.036, 0.018993, 0.005)
+        double3 xformOp:translate = (0, 0, 0.48792)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        token visibility = "invisible"
+    }
+}

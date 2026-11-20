@@ -1,0 +1,23 @@
+# FastWAM settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+
+# ---- run identity -----------------------------------------------------------
+WANDB_PROJECT: CoHuB_FastWAM
+
+# ---- training: budget -------------------------------------------------------
+FASTWAM_MAX_STEPS: 40000
+FASTWAM_GLOBAL_BATCH: 32           # micro batch and accumulation follow the card's VRAM
+
+# ---- training: what trains --------------------------------------------------
+# LoRA on the video expert, the action expert in full. Rank 0 trains the video
+# expert in full. FASTWAM_FREEZE_VIDEO_DIT=1 trains the action expert alone.
+FASTWAM_LORA_RANK: 128
+FASTWAM_LORA_ALPHA: 64
+FASTWAM_LORA_DROPOUT: 0.1
+FASTWAM_FREEZE_VIDEO_DIT: 0
+FASTWAM_GRAD_CKPT: 1               # gradient checkpointing
+
+# ---- evaluation ------------------------------------------------------------
+COHUB_EVAL_CKPTS: 40000            # checkpoints to evaluate, by step
+COHUB_EVAL_EPISODES: 100           # per task
+COHUB_EVAL_SEED: 1                 # episode i runs at seed COHUB_EVAL_SEED + i

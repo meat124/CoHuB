@@ -1,0 +1,22 @@
+# Diffusion Policy settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+# DP counts epochs, not steps, and trains one checkpoint per (task, robot).
+# DP_EXTRA takes any further Hydra override, space-separated.
+
+# ---- run identity -----------------------------------------------------------
+WANDB_PROJECT: CoHuB_DP
+
+# ---- training: budget -------------------------------------------------------
+DP_BATCH_SIZE: 256
+DP_NUM_EPOCHS: 600
+DP_CKPT_EVERY: 150                 # epochs between checkpoints
+
+# ---- training: action chunking ----------------------------------------------
+# Control steps at 50 Hz. Both values are part of the run tag.
+DP_HORIZON: 40                     # steps predicted (0.8 s)
+DP_N_ACTION_STEPS: 20              # steps executed before replanning (0.4 s)
+
+# ---- evaluation ------------------------------------------------------------
+COHUB_EVAL_CKPTS: 600              # checkpoints to evaluate, by epoch
+COHUB_EVAL_EPISODES: 100           # per task
+COHUB_EVAL_SEED: 1                 # episode i runs at seed COHUB_EVAL_SEED + i

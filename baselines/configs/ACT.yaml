@@ -1,0 +1,17 @@
+# ACT settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+# ACT counts epochs, not steps, and trains one checkpoint per (task, robot).
+
+# ---- run identity -----------------------------------------------------------
+WANDB_PROJECT: CoHuB_ACT
+
+# ---- training: budget -------------------------------------------------------
+ACT_BATCH_SIZE: 256
+ACT_NUM_EPOCHS: 600
+ACT_SAVE_FREQ: 150                 # epochs between checkpoints
+ACT_LR: 1e-4
+
+# ---- evaluation ------------------------------------------------------------
+COHUB_EVAL_CKPTS: 600              # checkpoints to evaluate, by epoch
+COHUB_EVAL_EPISODES: 100           # per task
+COHUB_EVAL_SEED: 1                 # episode i runs at seed COHUB_EVAL_SEED + i

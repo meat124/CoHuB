@@ -1,0 +1,42 @@
+# Experiment identifiers, set per launch.
+policy_name: Pi_05
+protocol: ws
+host: localhost
+port: 6000
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+action_type: joint
+eval_batch: true
+
+# Checkpoint step under the run directory. null or "last" takes the newest.
+checkpoint_num: null
+result_dir: "./results/pi05/"
+obs_transform_pipeline: "xspark-v1.0"
+
+# Directory of the uv-managed OpenPI environment.
+policy_uv_env_path: openpi
+
+# RoboDojo (upstream). Must match the config train.sh ran under.
+train_config_name: pi05_base_aloha_full_sim_arx-x5_seed_0
+repo_id: arx_x5_sim
+
+# CoHuB (bench_name=cohub). One server drives every robot.
+#   centralized    one policy with all 70 action dimensions (`ckpt_name: <task>`);
+#                  model_dir overrides its run directory.
+#   decentralized  `ckpt_name: multitask` is the shared policy, one instruction
+#                  per agent; model_dir overrides its run directory.
+#                  `ckpt_name: <task>` is one policy per robot;
+#                  model_dir_robot_a / _robot_b override their run directories.
+# `train_config_name` and `repo_id` above are ignored: the config is derived
+# from the task and target, and norm stats come from the checkpoint's assets.
+cohub_mode: decentralized
+model_dir: null
+model_dir_robot_a: null
+model_dir_robot_b: null
+
+# Steps of the 50-step chunk (1.0 s at 50 Hz) to execute before re-observing.
+# null runs the whole chunk.
+exec_horizon: null

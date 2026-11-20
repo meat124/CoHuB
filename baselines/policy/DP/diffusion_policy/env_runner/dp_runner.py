@@ -1,0 +1,99 @@
+import torch
+import numpy as np
+from collections import deque
+
+from diffusion_policy.common.pytorch_util import dict_apply
+from diffusion_policy.policy.base_image_policy import BaseImagePolicy
+
+class DPRunner:
+
+    def __init__(
+        self,
+        eval_episodes=20,
+        max_steps=300,
+        n_obs_steps=3,
+        n_action_steps=8,
+        fps=10,
+        crf=22,
+        tqdm_interval_sec=5.0,
+        task_name=None,
+    ):
+        self.task_name = task_name
+        self.eval_episodes = eval_episodes
+        self.fps = fps
+        self.crf = crf
+        self.n_obs_steps = n_obs_steps
+        self.n_action_steps = n_action_steps
+        self.max_steps = max_steps
+        self.tqdm_interval_sec = tqdm_interval_sec
+
+        self.obs_list = [deque(maxlen=n_obs_steps + 1) for _ in range(100)] # TODO
+
+    def stack_last_n_obs(self, all_obs, n_steps):
+        assert len(all_obs) > 0
+        all_obs = list(all_obs)
+        if isinstance(all_obs[0], np.ndarray):
+            result = np.zeros((n_steps, ) + all_obs[-1].shape, dtype=all_obs[-1].dtype)
+            start_idx = -min(n_steps, len(all_obs))
+            result[start_idx:] = np.array(all_obs[start_idx:])
+            if n_steps > len(all_obs):
+                # pad
+                result[:start_idx] = result[start_idx]
+        elif isinstance(all_obs[0], torch.Tensor):
+            result = torch.zeros((n_steps, ) + all_obs[-1].shape, dtype=all_obs[-1].dtype)
+            start_idx = -min(n_steps, len(all_obs))
+            result[start_idx:] = torch.stack(all_obs[start_idx:])
+            if n_steps > len(all_obs):
+                # pad
+                result[:start_idx] = result[start_idx]
+        else:
+            raise RuntimeError(f"Unsupported obs type {type(all_obs[0])}")
+        return result
+
+    def reset_obs(self):
+        for q in self.obs_list:
+            q.clear()
+
+    def update_obs(self, current_obs_list, env_idx_list):
+        for env_idx, current_obs in zip(env_idx_list, current_obs_list):
+            self.obs_list[env_idx].append(current_obs)
+
+    def get_n_steps_obs(self, env_idx_list):
+        result_list = []
+        for env_idx in env_idx_list:
+            result = dict()
+            for key in self.obs_list[env_idx][0].keys():
+                result[key] = self.stack_last_n_obs([obs[key] for obs in self.obs_list[env_idx]], self.n_obs_steps)
+            result_list.append(result)
+        return result_list
+
+    def get_action(self, policy: BaseImagePolicy, env_idx_list):
+        device = policy.device
+        obs_list = self.get_n_steps_obs(env_idx_list)
+
+        # device transfer
+
+        obs_list_numpy = [
+            dict_apply(obs, lambda x: torch.from_numpy(x).to(device=device))
+            for obs in obs_list
+        ]
+
+        with torch.no_grad():
+            # Whatever keys encode_obs actually produced -- not a hardcoded
+            # head_cam/left_cam/right_cam/agent_pos set. A robot trained with
+            # fewer camera streams (CoHuB's decentralized per-robot DP
+            # checkpoints: 1 camera, via train.sh's num_cameras-gated
+            # shape_meta) only ever has those keys in obs_list_numpy, and
+            # stacking a key the policy was never trained with would feed it
+            # an input it doesn't expect.
+            obs_dict_input = {
+                key: torch.stack([obs_torch[key] for obs_torch in obs_list_numpy], dim=0)
+                for key in obs_list_numpy[0].keys()
+            }
+
+            action_dict = policy.predict_action(obs_dict_input)
+
+        np_action_dict = dict_apply(action_dict, lambda x: x.detach().cpu().numpy())
+        actions = np_action_dict["action"][:, :self.n_action_steps]
+
+        return actions

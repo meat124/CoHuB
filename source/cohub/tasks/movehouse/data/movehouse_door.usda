@@ -1,0 +1,435 @@
+#usda 1.0
+(
+    customLayerData = {
+        string license = "Apache-2.0"
+        string modifiedFor = "CoHuB MoveHouse: 1.076 x 2.096 m leaf in a 1.100 x 2.100 m generated doorway; the source's 6.0 m divider wall replaced by a casing, since the room brings its own wall"
+        string sourceCommit = "016c70c1e4e76f521963c36691ee69a6ab3ac9cd"
+        string sourceUrl = "https://github.com/NVlabs/GR00T-VisualSim2Real/tree/doorman"
+    }
+    defaultPrim = "Door"
+    doc = "Generated from NVlabs/GR00T-VisualSim2Real DoorMan's Apache-2.0 generate_door_assets.py and adapted for CoHuB."
+)
+
+def Xform "Door" (
+    customData = {
+        double axleLength = 0.181742508365046
+        double doorHandleHeight = 0.9231993941811405
+        string doorHandleType = "lever"
+        double doorHandleWidth = 0.10809390610620744
+        double doorHeight = 2.096
+        int doorOpenIO = -1
+        int doorOpenLR = 1
+        double doorWeight = 45
+        double doorWidth = 1.076
+        double handleDriveMaxForce = 1.007066249847412
+        double handleLength = 0.13598528437324806
+        double handleRadius = 0.013832290311184181
+        double hingeDriveMaxForce = 3.7349629402160645
+        double hingeDriveStiffness = 6.504878520965576
+        double hookLength = 0.05202230023486418
+        string cohubBuiltBy = "tools/assets/build_movehouse_door.py"
+        string cohubOpening = "1.100 x 2.100 m in a 0.100 m wall"
+        bool spawnHook = 0
+        double totalWallHeight = 2.22
+        string userDocBrief = "Concrete prim schema for a transform, which implements Xformable."
+    }
+)
+{
+    quatd xformOp:orient = (1, 0, 0, 0)
+    double3 xformOp:scale = (1, 1, 1)
+    double3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+    def Scope "Looks"
+    {
+        def Material "WallPaint"
+        {
+            token outputs:surface.connect = </Door/Looks/WallPaint/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.3, 0.43, 0.42)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.78
+                token outputs:surface
+            }
+        }
+
+        def Material "WalnutTrim"
+        {
+            token outputs:surface.connect = </Door/Looks/WalnutTrim/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.075, 0.018, 0.006)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.46
+                token outputs:surface
+            }
+        }
+
+        def Material "DoorWood"
+        {
+            token outputs:surface.connect = </Door/Looks/DoorWood/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.14, 0.032, 0.009)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.38
+                token outputs:surface
+            }
+        }
+
+        def Material "BrushedMetal"
+        {
+            token outputs:surface.connect = </Door/Looks/BrushedMetal/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.34, 0.38, 0.42)
+                float inputs:metallic = 0.92
+                float inputs:roughness = 0.22
+                token outputs:surface
+            }
+        }
+    }
+
+    def Xform "root" (
+        apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsArticulationRootAPI"]
+    )
+    {
+        rel material:binding = </Door/Looks/WallPaint>
+        bool physics:kinematicEnabled = 0
+        custom bool physxArticulation:enabledSelfCollisions = 0
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def PhysicsRevoluteJoint "hinge_joint" (
+            apiSchemas = ["PhysicsDriveAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 50
+            float drive:angular:physics:maxForce = 3.734963
+            float drive:angular:physics:stiffness = 6.5048785
+            float drive:angular:physics:targetPosition = -10
+            uniform token physics:axis = "Z"
+            rel physics:body0 = </Door/root>
+            rel physics:body1 = </Door/door_panel>
+            point3f physics:localPos0 = (0.02, -0.54, 0)
+            point3f physics:localPos1 = (0.02, -0.54, 0)
+            quatf physics:localRot0 = (0, 1, 0, 0)
+            quatf physics:localRot1 = (6.123234e-17, 1, 0, 0)
+            float physics:lowerLimit = -150
+            float physics:upperLimit = 150
+        }
+
+        def Cube "left_frame" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI"]
+        )
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            bool physics:collisionEnabled = 1
+            float physics:mass = 100
+            double size = 2
+            custom double3 xformOp:scale = (0.060000000000000005, 0.03, 1.05)
+            custom double3 xformOp:translate = (-0.02, 0.5700000000000001, 1.05)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "right_frame" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI"]
+        )
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            bool physics:collisionEnabled = 1
+            float physics:mass = 100
+            double size = 2
+            custom double3 xformOp:scale = (0.060000000000000005, 0.03, 1.05)
+            custom double3 xformOp:translate = (-0.02, -0.5700000000000001, 1.05)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "top_frame" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI"]
+        )
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            bool physics:collisionEnabled = 1
+            float physics:mass = 100
+            double size = 2
+            custom double3 xformOp:scale = (0.060000000000000005, 0.6000000000000001, 0.065)
+            custom double3 xformOp:translate = (-0.02, 0, 2.1550000000000002)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+
+    def Xform "door_panel" (
+        apiSchemas = ["PhysicsRigidBodyAPI"]
+    )
+    {
+        bool physics:kinematicEnabled = 0
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "panel" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/DoorWood>
+            bool physics:collisionEnabled = 1
+            float physics:mass = 45
+            color3f[] primvars:displayColor = [(0.43, 0.2, 0.065)]
+            uniform token purpose = "default"
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.019999999552965164, 0.538, 1.048)
+            double3 xformOp:translate = (0, 0, 1.0499534930434211)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "subpanel_0_top_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.4671096040726519, 0.03848025378025672)
+            double3 xformOp:translate = (-0.031, 0, 2.059473242901659)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "subpanel_1_top_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.4671096040726519, 0.03848025378025672)
+            double3 xformOp:translate = (-0.031, 0, 1.4322942765317894)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "subpanel_2_top_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.4671096040726519, 0.03848025378025672)
+            double3 xformOp:translate = (-0.031, 0, 0.8051153683778293)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "subpanel_2_bottom_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.4671096040726519, 0.03848025378025672)
+            double3 xformOp:translate = (-0.031, 0, 0.1779364456698918)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "reserve_bottom_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.4671096040726519, 0.06875139490428593)
+            double3 xformOp:translate = (-0.031, 0, 0.07070479334685482)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "left_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.03544520131518947, 1.048)
+            double3 xformOp:translate = (-0.031, 0.502554802036326, 1.0499534930434211)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "right_frame"
+        {
+            float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+            rel material:binding = </Door/Looks/WalnutTrim>
+            color3f[] primvars:displayColor = [(0.63, 0.34, 0.11)]
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (0.009999999776482582, 0.03544520131518947, 1.048)
+            double3 xformOp:translate = (-0.031, -0.502554802036326, 1.0499534930434211)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cylinder "handle_rosette_inside"
+        {
+            uniform token axis = "Z"
+            double height = 0.008
+            rel material:binding = </Door/Looks/BrushedMetal>
+            double radius = 0.038
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865475, 0)
+            double3 xformOp:translate = (-0.024, 0.431906, 0.9231994152069092)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def Cylinder "handle_rosette_outside"
+        {
+            uniform token axis = "Z"
+            double height = 0.008
+            rel material:binding = </Door/Looks/BrushedMetal>
+            double radius = 0.038
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865475, 0)
+            double3 xformOp:translate = (0.024, 0.431906, 0.9231994152069092)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def PhysicsRevoluteJoint "handle_joint" (
+            apiSchemas = ["PhysicsDriveAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0.5
+            float drive:angular:physics:maxForce = 1.0070662
+            float drive:angular:physics:stiffness = 50
+            float drive:angular:physics:targetPosition = -15
+            uniform token physics:axis = "X"
+            rel physics:body0 = </Door/door_panel>
+            rel physics:body1 = </Door/door_handle>
+            point3f physics:localPos0 = (0, 0.431906, 0.9231994)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = 0
+            float physics:upperLimit = 45
+        }
+    }
+
+    def Xform "door_handle" (
+        apiSchemas = ["PhysicsRigidBodyAPI"]
+    )
+    {
+        rel material:binding = </Door/Looks/BrushedMetal>
+        bool physics:kinematicEnabled = 0
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0.431906, 0.9231994152069092)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cylinder "axle" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsCollisionAPI"]
+        )
+        {
+            uniform token axis = "Z"
+            float3[] extent = [(-0.013832291, -0.013832291, -0.09087125), (0.013832291, 0.013832291, 0.09087125)]
+            double height = 0.181742508365046
+            bool physics:collisionEnabled = 1
+            float physics:mass = 0.2
+            color3f[] primvars:displayColor = [(0.48, 0.52, 0.58)]
+            double radius = 0.013832290311184181
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865475, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cylinder "hub_inside"
+        {
+            uniform token axis = "Z"
+            double height = 0.038
+            rel material:binding = </Door/Looks/BrushedMetal>
+            double radius = 0.025
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865475, 0)
+            double3 xformOp:translate = (-0.055, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def Cylinder "hub_outside"
+        {
+            uniform token axis = "Z"
+            double height = 0.038
+            rel material:binding = </Door/Looks/BrushedMetal>
+            double radius = 0.025
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865475, 0)
+            double3 xformOp:translate = (0.055, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def Capsule "handle_inside" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsCollisionAPI"]
+        )
+        {
+            uniform token axis = "Z"
+            float3[] extent = [(-0.013832291, -0.013832291, -0.081824936), (0.013832291, 0.013832291, 0.081824936)]
+            double height = 0.13598528437324806
+            bool physics:collisionEnabled = 1
+            float physics:mass = 0.1
+            color3f[] primvars:displayColor = [(0.48, 0.52, 0.58)]
+            double radius = 0.013832290311184181
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0.7071067811865475, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-0.09087125211954117, -0.06799264252185822, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Capsule "handle_outside" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsCollisionAPI"]
+        )
+        {
+            uniform token axis = "Z"
+            float3[] extent = [(-0.013832291, -0.013832291, -0.081824936), (0.013832291, 0.013832291, 0.081824936)]
+            double height = 0.13598528437324806
+            bool physics:collisionEnabled = 1
+            float physics:mass = 0.1
+            color3f[] primvars:displayColor = [(0.48, 0.52, 0.58)]
+            double radius = 0.013832290311184181
+            custom bool refinementEnableOverride = 1
+            custom int refinementLevel = 2
+            quatd xformOp:orient = (0.7071067811865476, 0.7071067811865475, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.09087125211954117, -0.06799264252185822, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def PhysicsFixedJoint "grasp_target_joint"
+        {
+            rel physics:body0 = </Door/grasp_target>
+            rel physics:body1 = </Door/door_handle>
+            point3f physics:localPos1 = (-0.15, -0.06799264, 0.02)
+        }
+    }
+
+    def Xform "grasp_target" (
+        apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        bool physics:kinematicEnabled = 0
+        float physics:mass = 0.001
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (-0.15000000596046448, 0.3639133574781418, 0.9431994147598743)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+    }
+}
+

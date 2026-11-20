@@ -1,0 +1,10 @@
+# This adapter's data/ only. Anchored so that psi0/src/psi/data stays tracked.
+/data/
+
+# Upstream's physical-teleoperation CAD, unused in simulation
+psi0/real/assets/
+psi0/real/teleop/
+
+# Git LFS pointer stubs of the H-RDT language embeddings, unused here
+psi0/src/h_rdt/inference/*/utils/lang_embeddings/
+psi0/src/h_rdt/inference/*/*/utils/lang_embeddings/

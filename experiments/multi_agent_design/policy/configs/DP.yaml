@@ -1,0 +1,2 @@
+WANDB_PROJECT: CoHuB_DP_multi_agent_design
+MAD_GLOBAL_MICRO_BATCH: 128

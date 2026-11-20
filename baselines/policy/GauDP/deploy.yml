@@ -1,0 +1,24 @@
+policy_name: GauDP
+protocol: ws
+host: localhost
+port: null
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+action_type: joint
+gpu_id: null
+eval_batch: false
+
+# The checkpoint's camera_order decides the views. Set this only to cross-check
+# that the scene camera is (true) or is not (false) one of them.
+use_scene: null
+# best falls back to last when best.ckpt does not exist (and vice versa).
+checkpoint: last
+# Clamp live joint observations to the per-dimension range stored in the policy
+# checkpoint.
+obs_clip: fitted               # fitted | None
+# Override when the policy used an external NoPoSplat checkpoint instead of
+# gaussian/{best,last}.ckpt.
+gaussian_checkpoint: null

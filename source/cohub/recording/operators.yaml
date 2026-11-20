@@ -1,0 +1,15 @@
+# Operator/session metadata recorded into every episode (meta/* fields).
+# String identities are mapped to integer codes here.
+partner_id: 0        # pairing index (operator_a, operator_b) combination
+operator_id_a: 0     # leader operator
+operator_id_b: 1     # follower operator
+operator_id_c: 2     # third operator, three-robot tasks only
+terrain_id: 0        # 0 = flat ground
+# Not read from here: the record script stamps it from the env it built.
+#   0 = the fingers hold the object by contact, 1 = a proximity latch held it
+grasp_abstraction: 0
+role_a_leader: 1     # 1 = operator A leads the carry, 0 = operator B does
+
+# operator_device_b and operator_device_c are not set here: the record script
+# derives them from how the session was run.
+#   0 constant   1 keyboard   2 gamepad   3 quest

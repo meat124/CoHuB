@@ -1,0 +1,43 @@
+# Experiment identifiers, set per launch.
+policy_name: Psi0
+protocol: ws
+host: localhost
+port: 6000
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+gpu_id: null
+action_type: joint
+eval_batch: false
+
+# CoHuB (bench_name=cohub). Psi0 supports `decentralized` only.
+#   shared     one policy (`ckpt_name: multitask`), queried once per agent with
+#              its own camera, joints and instruction.
+#   per_robot  one checkpoint per robot.
+cohub_mode: decentralized
+cohub_decentralized_style: shared
+
+# ckpt_tag is the run-dir suffix set by CKPT_TAG at training. checkpoint_num
+# picks ckpt_<step>; null or "last" takes the newest. model_dir* override the
+# run directory.
+ckpt_tag: null
+checkpoint_num: last
+model_dir: null
+model_dir_robot_a: null
+model_dir_robot_b: null
+
+# Steps of the chunk to execute before re-observing (30 = 0.6 s at 50 Hz).
+# null takes the checkpoint's action_exec_horizon.
+exec_horizon: 30
+
+# Flow-matching steps per call. null takes the config's eval_diffusion_steps.
+num_inference_steps: 10
+
+# Instruction override per agent. null uses the instruction the env sends.
+prompt_robot_a: null
+prompt_robot_b: null
+
+# Directory of the uv-managed Psi0 environment.
+policy_uv_env_path: psi0

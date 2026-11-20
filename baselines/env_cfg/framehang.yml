@@ -1,0 +1,5 @@
+config:
+  robot: g1x2
+  sim: default
+
+gym_id: Isaac-FrameHang-G1x2-v0

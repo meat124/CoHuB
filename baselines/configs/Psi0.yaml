@@ -1,0 +1,40 @@
+# Psi0 settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+
+# ---- run identity -----------------------------------------------------------
+CKPT_TAG: cohub2                   # suffix on the checkpoint dir, the eval dirs and the wandb run
+WANDB_PROJECT: CoHuB_Psi0
+
+# ---- training: budget -------------------------------------------------------
+MAX_STEPS: 40000
+SAVE_STEPS: 10000                  # steps between checkpoints
+GLOBAL_BATCH_SIZE: 32              # micro batch x gradient accumulation
+PSI0_MICRO_BATCH: 16               # fits one 48 GB card
+
+# ---- training: adapters -----------------------------------------------------
+# LoRA on the Qwen3-VL LLM and on the DiT. The vision tower and merger train in full.
+PSI0_LORA_LLM_RANK: 16
+PSI0_LORA_LLM_ALPHA: 16
+PSI0_LORA_DIT_RANK: 32
+PSI0_LORA_DIT_ALPHA: 32
+PSI0_LORA_DROPOUT: 0
+PSI0_TUNE_VISION: 1
+PSI0_TUNE_DIT_FULL: 0
+
+# ---- training: memory -------------------------------------------------------
+PSI0_GRAD_CKPT: 1                  # gradient checkpointing
+
+# ---- training: optimiser and schedule ---------------------------------------
+# AdamW. Linear warm-up, then cosine from PSI0_LR to PSI0_MIN_LR.
+PSI0_LR: 2.5e-5
+PSI0_MIN_LR: 2.5e-6
+PSI0_WARMUP_STEPS: 1000
+PSI0_WEIGHT_DECAY: 1e-10
+PSI0_BETA1: 0.9
+PSI0_BETA2: 0.95
+PSI0_EPS: 1e-8
+
+# ---- evaluation ------------------------------------------------------------
+COHUB_EVAL_CKPTS: 20000 40000     # checkpoints to evaluate, by step
+COHUB_EVAL_EPISODES: 100           # per task
+COHUB_EVAL_SEED: 1                 # episode i runs at seed COHUB_EVAL_SEED + i

@@ -1,0 +1,122 @@
+# CoHuB decentralized: one policy per robot, from its own ego camera.
+#
+# The converter names the single stream `observation.images.ego` whichever
+# robot it belongs to, so robot_a's and robot_b's datasets both read through
+# this one config. Action 35D, state 43D (that robot's joint angles); see
+# cohub_centralized.yaml for why state is not the robotwin state=action
+# convention. Placeholders overridden by policy/FastWAM/train.sh.
+train:
+  _target_: fastwam.datasets.lerobot.robot_video_dataset.RobotVideoDataset
+  dataset_dirs:
+    - ./data/cohub/lerobot
+  shape_meta:
+    images:
+      - key: ego
+        raw_shape: [3, 240, 320]
+        shape: [3, 240, 320]
+    action:
+      - key: default
+        raw_shape: 35
+        shape: 35
+    state:
+      - key: default
+        raw_shape: 43
+        shape: 43
+  num_frames: 33
+  global_sample_stride: 1
+  action_video_freq_ratio: 4 # 32 action steps, 9 video frames
+  # 192, not the camera's native 240: the VAE compresses space 16x and the DiT
+  # patch is 2x2, so a side must be a multiple of 32 (240 -> latent 15, odd,
+  # and training dies on "Latent spatial shape must be divisible by DiT patch
+  # size"). 192 is also exactly the per-view height centralized ends up with
+  # (two views stacked into its 384 canvas), so both modes see a view at the
+  # same resolution.
+  video_size: [192, 320]
+  camera_key: null
+  val_set_proportion: 0.0
+  is_training_set: true
+  pretrained_norm_stats: ./data/cohub/dataset_stats.json
+  skip_padding_as_possible: false
+  # Training-only augmentation (off by default): random crop offset [dy, dx]
+  # in pixels around the center crop, and relative brightness/contrast jitter.
+  augment_shift_px: null
+  augment_color: 0.0
+  concat_multi_camera: "vertical" # unused with one camera
+  processor:
+    _target_: fastwam.datasets.lerobot.processors.fastwam_processor.FastWAMProcessor
+    shape_meta: ${data.train.shape_meta}
+    num_obs_steps: ${data.train.num_frames}
+    num_output_cameras: 1
+    action_output_dim: 35
+    proprio_output_dim: 43
+    action_state_transforms: null
+    use_stepwise_action_norm: False
+    norm_default_mode: "z-score"
+    norm_exception_mode: null
+    action_state_merger:
+      _target_: fastwam.datasets.lerobot.transforms.action_state_merger.ConcatLeftAlign
+    train_transforms:
+      - _target_: fastwam.datasets.lerobot.transforms.image.ToTensor
+      - _target_: torchvision.transforms.Resize
+        size: [240, 320]
+    val_transforms:
+      - _target_: fastwam.datasets.lerobot.transforms.image.ToTensor
+      - _target_: torchvision.transforms.Resize
+        size: [240, 320]
+  text_embedding_cache_dir: ./data/text_embeds_cache/cohub
+  context_len: 128
+
+# shape_meta and processor are spelled out rather than interpolated from
+# train, matching robotwin.yaml: train.sh overrides the action/state widths on
+# both splits, and hydra cannot reach through `${data.train.shape_meta}` to a
+# key that does not exist under data.val ("Key 'action' is not in struct").
+val:
+  _target_: fastwam.datasets.lerobot.robot_video_dataset.RobotVideoDataset
+  dataset_dirs:
+    - ./data/cohub/lerobot_val
+  shape_meta:
+    images:
+      - key: ego
+        raw_shape: [3, 240, 320]
+        shape: [3, 240, 320]
+    action:
+      - key: default
+        raw_shape: 35
+        shape: 35
+    state:
+      - key: default
+        raw_shape: 43
+        shape: 43
+  num_frames: ${data.train.num_frames}
+  global_sample_stride: ${data.train.global_sample_stride}
+  action_video_freq_ratio: ${data.train.action_video_freq_ratio}
+  video_size: ${data.train.video_size}
+  camera_key: null
+  val_set_proportion: 0.0
+  is_training_set: false
+  pretrained_norm_stats: ${data.train.pretrained_norm_stats}
+  skip_padding_as_possible: false
+  concat_multi_camera: ${data.train.concat_multi_camera}
+  processor:
+    _target_: fastwam.datasets.lerobot.processors.fastwam_processor.FastWAMProcessor
+    shape_meta: ${data.val.shape_meta}
+    num_obs_steps: ${data.train.num_frames}
+    num_output_cameras: 1
+    action_output_dim: 35
+    proprio_output_dim: 43
+    action_state_transforms: null
+    use_stepwise_action_norm: False
+    norm_default_mode: "z-score"
+    norm_exception_mode: null
+    action_state_merger:
+      _target_: fastwam.datasets.lerobot.transforms.action_state_merger.ConcatLeftAlign
+    train_transforms:
+      - _target_: fastwam.datasets.lerobot.transforms.image.ToTensor
+      - _target_: torchvision.transforms.Resize
+        size: [240, 320]
+    val_transforms:
+      - _target_: fastwam.datasets.lerobot.transforms.image.ToTensor
+      - _target_: torchvision.transforms.Resize
+        size: [240, 320]
+  text_embedding_cache_dir: ${data.train.text_embedding_cache_dir}
+  context_len: ${data.train.context_len}

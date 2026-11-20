@@ -1,0 +1,20 @@
+**/__pycache__/**
+**/*.egg-info/
+**/.ruff_cache/
+**/.venv/**
+**/checkpoints/**
+**/checkpoints
+# Pretrained weights, as a directory or a symlink
+policy/*/weights/
+policy/*/weights
+train_out/
+checkpoints/
+runs/
+Log/
+logs/
+wandb/
+policy/*/.install_unfinished
+# Prepared training data and caches
+policy/*/data/
+policy/FastWAM/FastWAM/data/
+policy/Pi_05/openpi/assets/

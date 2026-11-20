@@ -1,0 +1,14 @@
+{
+    "unitree_g1x2_decentralized": {
+        "arm_dim": [17],
+        "ee_dim": [18],
+        "state_dim": 43,
+        "num_cameras": 1
+    },
+    "unitree_g1x2_centralized": {
+        "arm_dim": [17, 17],
+        "ee_dim": [18, 18],
+        "state_dim": 86,
+        "num_cameras": 2
+    }
+}

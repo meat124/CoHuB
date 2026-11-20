@@ -1,0 +1,61 @@
+# GauDP settings, as the environment variables its scripts read. Flat `KEY: value` lines.
+# A variable already set in the calling shell wins over this file.
+# Training has three stages: the Gaussian encoder, its feature cache, the policy.
+
+# ---- run identity -----------------------------------------------------------
+CKPT_TAG: cohub2                   # names the run directory, the eval directory and the wandb id
+WANDB_PROJECT: CoHuB_GauDP
+
+# ---- stage 1: the Gaussian encoder -----------------------------------------
+GAUDP_GAUSSIAN_EPOCHS: 20
+GAUDP_GAUSSIAN_EARLY_STOP: 3       # epochs without a val/loss improvement before stopping
+GAUDP_FINETUNE_MODE: full
+# Effective batch = batch size x gradient accumulation. Peak at batch 8: 36 GiB.
+GAUDP_GAUSSIAN_BATCH_SIZE: 8
+GAUDP_GAUSSIAN_GRAD_ACCUM: 1
+GAUDP_GAUSSIAN_NUM_WORKERS: 5      # data loader workers
+
+# One encoder trained over GAUDP_SHARED_TASKS and used by every task.
+# GAUDP_SHARED_GAUSSIAN=0 makes a task train and use its own.
+GAUDP_SHARED_TASKS: cocarry handover framehang pouring copouring trashcollection cartservice tablealign
+GAUDP_SHARED_GAUSSIAN: 1
+GAUDP_SHARED_EPOCHS: 10
+
+# The variant names the shared run's directory and wandb id.
+GAUDP_SHARED_VARIANT: lr5e-5
+GAUDP_SHARED_LR: 5e-5                # head; the backbone gets x0.1
+GAUDP_SHARED_BACKBONE_LR_MULT: 0.1
+GAUDP_SHARED_EARLY_STOP: 0           # 0: no early stopping
+GAUDP_GAUSSIAN_VAL_EVERY: 4000       # optimizer steps between subset validations
+GAUDP_GAUSSIAN_VAL_SUBSET: 800       # frames per task in the validation subset
+
+# ---- the three-robot set (MoveHouse, BigTable) ------------------------------
+# Three ego views need their own encoder: `baselines/policy/GauDP/train_hook.sh shared all3`.
+GAUDP_SHARED3_TASKS: movehouse bigtable
+GAUDP_SHARED3_EPOCHS: 8
+# Effective batch 8 on a 48 GB card. Do not change either value when resuming a run.
+GAUDP_GAUSSIAN3_BATCH_SIZE: 4
+GAUDP_GAUSSIAN3_GRAD_ACCUM: 2
+GAUDP_SHARED3_VARIANT: lr5e-5
+GAUDP_SHARED3_LR: 5e-5
+GAUDP_SHARED3_BACKBONE_LR_MULT: 0.1
+GAUDP_SHARED3_EARLY_STOP: 0
+
+# ---- stage 3: the policy ----------------------------------------------------
+GAUDP_POLICY_EPOCHS: 150
+GAUDP_POLICY_BATCH_SIZE: 128       # peak 24.5 GiB
+GAUDP_POLICY_NUM_WORKERS: 6
+GAUDP_POLICY_GRAD_ACCUM: 1         # micro-batches per optimizer step; 2 fits a 24 GB card
+GAUDP_POLICY_LR: 1e-4              # peak LR
+GAUDP_POLICY_WARMUP: 500           # optimizer steps of linear warm-up under the cosine schedule
+GAUDP_POLICY_STATE_NOISE: 0.02     # training proprio noise, x the per-dimension demonstration range
+GAUDP_POLICY_RANGE_EPS: 1e-4       # LinearNormalizer floor
+GAUDP_POLICY_OBS_STEPS: 1
+# Control steps at 50 Hz.
+GAUDP_POLICY_HORIZON: 40           # steps predicted (0.8 s)
+GAUDP_POLICY_ACTION_STEPS: 20      # steps executed before replanning (0.4 s)
+
+# ---- evaluation ------------------------------------------------------------
+# No checkpoint list: a run is evaluated at its policy/last.ckpt.
+COHUB_EVAL_EPISODES: 100           # per task
+COHUB_EVAL_SEED: 1                 # episode i runs at seed COHUB_EVAL_SEED + i

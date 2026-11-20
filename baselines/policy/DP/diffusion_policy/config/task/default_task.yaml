@@ -1,0 +1,46 @@
+name: task_config
+
+image_shape: &image_shape [3, 240, 320]
+shape_meta: &shape_meta
+  # acceptable types: rgb, low_dim
+  # Camera keys (head_cam for 1-camera robots, left_cam+right_cam for
+  # 2-camera ones) are appended by train.sh via `+`, chosen from this robot's
+  # num_cameras in utils/robot/_robot_info.json -- RobotImageDataset maps the
+  # zarr's own camera_map onto the same names, so this stays in sync with
+  # what training actually produces regardless of camera count.
+  obs:
+    agent_pos:
+      shape: null
+      type: low_dim
+  action:
+    shape: null
+
+env_runner:
+  _target_: diffusion_policy.env_runner.pusht_image_runner.PushTImageRunner
+  n_train: 6
+  n_train_vis: 2
+  train_start_seed: 0
+  n_test: 50
+  n_test_vis: 4
+  legacy_test: True
+  test_start_seed: 100000
+  max_steps: 300
+  n_obs_steps: ${n_obs_steps}
+  n_action_steps: ${n_action_steps}
+  fps: 10
+  past_action: ${past_action_visible}
+  n_envs: null
+
+dataset:
+  _target_: diffusion_policy.dataset.robot_image_dataset.RobotImageDataset
+  zarr_path: null
+  val_zarr_path: null
+  batch_size: ${dataloader.batch_size}
+  horizon: ${horizon}
+  pad_before: ${eval:'${n_obs_steps}-1'}
+  pad_after: ${eval:'${n_action_steps}-1'}
+  # Cameras are read for this many leading frames only (RobotImageDataset).
+  n_obs_steps: ${dataset_obs_steps}
+  seed: 42
+  val_ratio: 0.02
+  max_train_episodes: null

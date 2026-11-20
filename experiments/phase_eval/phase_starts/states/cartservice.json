@@ -1,0 +1,997 @@
+{
+  "schema": 2,
+  "task": "cartservice",
+  "gym_id": "Isaac-CartService-G1x2-v0",
+  "chain": [
+    "park",
+    "lift",
+    "serve"
+  ],
+  "details": [
+    "carry"
+  ],
+  "collaborative": {
+    "park": false,
+    "lift": true,
+    "serve": false
+  },
+  "checks_key": "cartservice_success",
+  "step_dt": 0.02,
+  "budgets": {
+    "park": 800,
+    "lift": 1200,
+    "serve": 1450
+  },
+  "phase_length_max": {
+    "park": 400,
+    "lift": 590,
+    "serve": 706
+  },
+  "lived_slack": 100,
+  "lived_trials": {
+    "park": 50,
+    "lift": 47,
+    "serve": 7
+  },
+  "source": {
+    "split": "train",
+    "demos": 50,
+    "frames": 54705,
+    "mhbench_sha": "f47fa31f3f92a32e076dc850b0cbcd781d372317",
+    "shards_match_export": "exact",
+    "unreproduced_success": [],
+    "export_revision": "a2bef2aea1355f5d2205adca98e0c14252994917"
+  },
+  "demos": [
+    {
+      "episode_index": 0,
+      "demo": "demo_0",
+      "T": 1223,
+      "achieved": {
+        "park": 277,
+        "lift": 648
+      },
+      "lived": {
+        "park": 275,
+        "lift": null
+      },
+      "details": {
+        "carry": 858
+      },
+      "env_success_frame": 1213,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 1,
+      "demo": "demo_1",
+      "T": 1054,
+      "achieved": {
+        "park": 278,
+        "lift": 741
+      },
+      "lived": {
+        "park": 278,
+        "lift": null
+      },
+      "details": {
+        "carry": 870
+      },
+      "env_success_frame": 1037,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 2,
+      "demo": "demo_2",
+      "T": 946,
+      "achieved": {
+        "park": 283,
+        "lift": 652
+      },
+      "lived": {
+        "park": 276,
+        "lift": null
+      },
+      "details": {
+        "carry": 778
+      },
+      "env_success_frame": 923,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 3,
+      "demo": "demo_3",
+      "T": 1135,
+      "achieved": {
+        "park": 291,
+        "lift": 610
+      },
+      "lived": {
+        "park": 292,
+        "lift": 613
+      },
+      "details": {
+        "carry": 789
+      },
+      "env_success_frame": 1123,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 4,
+      "demo": "demo_4",
+      "T": 1133,
+      "achieved": {
+        "park": 276,
+        "lift": 738
+      },
+      "lived": {
+        "park": null,
+        "lift": null
+      },
+      "details": {
+        "carry": 883
+      },
+      "env_success_frame": 1123,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 5,
+      "demo": "demo_5",
+      "T": 1101,
+      "achieved": {
+        "park": 276,
+        "lift": 608
+      },
+      "lived": {
+        "park": 272,
+        "lift": null
+      },
+      "details": {
+        "carry": 831
+      },
+      "env_success_frame": 1077,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 6,
+      "demo": "demo_6",
+      "T": 1041,
+      "achieved": {
+        "park": 306,
+        "lift": 700
+      },
+      "lived": {
+        "park": 314,
+        "lift": null
+      },
+      "details": {
+        "carry": 865
+      },
+      "env_success_frame": 1027,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 7,
+      "demo": "demo_7",
+      "T": 1000,
+      "achieved": {
+        "park": 283,
+        "lift": 624
+      },
+      "lived": {
+        "park": 282,
+        "lift": null
+      },
+      "details": {
+        "carry": 806
+      },
+      "env_success_frame": 972,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 8,
+      "demo": "demo_8",
+      "T": 1252,
+      "achieved": {
+        "park": 325,
+        "lift": 637
+      },
+      "lived": {
+        "park": 323,
+        "lift": null
+      },
+      "details": {
+        "carry": 937
+      },
+      "env_success_frame": 1223,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 9,
+      "demo": "demo_9",
+      "T": 1022,
+      "achieved": {
+        "park": 287,
+        "lift": 651
+      },
+      "lived": {
+        "park": 295,
+        "lift": null
+      },
+      "details": {
+        "carry": 773
+      },
+      "env_success_frame": 967,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 10,
+      "demo": "demo_10",
+      "T": 1092,
+      "achieved": {
+        "park": 292,
+        "lift": 725
+      },
+      "lived": {
+        "park": 286,
+        "lift": 727
+      },
+      "details": {
+        "carry": 920
+      },
+      "env_success_frame": 1068,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 11,
+      "demo": "demo_11",
+      "T": 1090,
+      "achieved": {
+        "park": 294,
+        "lift": 606
+      },
+      "lived": {
+        "park": 296,
+        "lift": null
+      },
+      "details": {
+        "carry": 754
+      },
+      "env_success_frame": 1075,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 12,
+      "demo": "demo_12",
+      "T": 1094,
+      "achieved": {
+        "park": 285,
+        "lift": 632
+      },
+      "lived": {
+        "park": 283,
+        "lift": null
+      },
+      "details": {
+        "carry": 814
+      },
+      "env_success_frame": 1084,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 13,
+      "demo": "demo_13",
+      "T": 1026,
+      "achieved": {
+        "park": 289,
+        "lift": 646
+      },
+      "lived": {
+        "park": 286,
+        "lift": 650
+      },
+      "details": {
+        "carry": 798
+      },
+      "env_success_frame": 996,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 14,
+      "demo": "demo_14",
+      "T": 1201,
+      "achieved": {
+        "park": 297,
+        "lift": 887
+      },
+      "lived": {
+        "park": 302,
+        "lift": null
+      },
+      "details": {
+        "carry": 993
+      },
+      "env_success_frame": 1164,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 15,
+      "demo": "demo_15",
+      "T": 950,
+      "achieved": {
+        "park": 275,
+        "lift": 698
+      },
+      "lived": {
+        "park": 268,
+        "lift": null
+      },
+      "details": {
+        "carry": 844
+      },
+      "env_success_frame": 940,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 16,
+      "demo": "demo_16",
+      "T": 1196,
+      "achieved": {
+        "park": 289,
+        "lift": 741
+      },
+      "lived": {
+        "park": 297,
+        "lift": null
+      },
+      "details": {
+        "carry": 903
+      },
+      "env_success_frame": 1184,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 17,
+      "demo": "demo_17",
+      "T": 954,
+      "achieved": {
+        "park": 264,
+        "lift": 622
+      },
+      "lived": {
+        "park": 271,
+        "lift": null
+      },
+      "details": {
+        "carry": 774
+      },
+      "env_success_frame": 936,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 18,
+      "demo": "demo_18",
+      "T": 1157,
+      "achieved": {
+        "park": 287,
+        "lift": 842
+      },
+      "lived": {
+        "park": 301,
+        "lift": null
+      },
+      "details": {
+        "carry": 1005
+      },
+      "env_success_frame": 1147,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 19,
+      "demo": "demo_19",
+      "T": 1082,
+      "achieved": {
+        "park": 270,
+        "lift": 736
+      },
+      "lived": {
+        "park": 272,
+        "lift": null
+      },
+      "details": {
+        "carry": 906
+      },
+      "env_success_frame": 1057,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 20,
+      "demo": "demo_20",
+      "T": 993,
+      "achieved": {
+        "park": 270,
+        "lift": 661
+      },
+      "lived": {
+        "park": 275,
+        "lift": 666
+      },
+      "details": {
+        "carry": 784
+      },
+      "env_success_frame": 978,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 21,
+      "demo": "demo_21",
+      "T": 1267,
+      "achieved": {
+        "park": 277,
+        "lift": 740
+      },
+      "lived": {
+        "park": 272,
+        "lift": null
+      },
+      "details": {
+        "carry": 949
+      },
+      "env_success_frame": 1255,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 22,
+      "demo": "demo_22",
+      "T": 1036,
+      "achieved": {
+        "park": 267,
+        "lift": 612
+      },
+      "lived": {
+        "park": 258,
+        "lift": null
+      },
+      "details": {
+        "carry": 788
+      },
+      "env_success_frame": 1026,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 23,
+      "demo": "demo_23",
+      "T": 1141,
+      "achieved": {
+        "park": 276,
+        "lift": 614
+      },
+      "lived": {
+        "park": 283,
+        "lift": null
+      },
+      "details": {
+        "carry": 778
+      },
+      "env_success_frame": 1105,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 24,
+      "demo": "demo_24",
+      "T": 1374,
+      "achieved": {
+        "park": 302,
+        "lift": 822
+      },
+      "lived": {
+        "park": 304,
+        "lift": null
+      },
+      "details": {
+        "carry": 979
+      },
+      "env_success_frame": 1352,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 25,
+      "demo": "demo_25",
+      "T": 1008,
+      "achieved": {
+        "park": 281,
+        "lift": 724
+      },
+      "lived": {
+        "park": 279,
+        "lift": null
+      },
+      "details": {
+        "carry": 886
+      },
+      "env_success_frame": 995,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 26,
+      "demo": "demo_26",
+      "T": 1251,
+      "achieved": {
+        "park": 305,
+        "lift": 826
+      },
+      "lived": {
+        "park": 316,
+        "lift": null
+      },
+      "details": {
+        "carry": 975
+      },
+      "env_success_frame": 1233,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 27,
+      "demo": "demo_27",
+      "T": 1427,
+      "achieved": {
+        "park": 320,
+        "lift": 880
+      },
+      "lived": {
+        "park": 315,
+        "lift": 884
+      },
+      "details": {
+        "carry": 1066
+      },
+      "env_success_frame": 1322,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 28,
+      "demo": "demo_28",
+      "T": 1049,
+      "achieved": {
+        "park": 288,
+        "lift": 647
+      },
+      "lived": {
+        "park": 290,
+        "lift": 651
+      },
+      "details": {
+        "carry": 803
+      },
+      "env_success_frame": 1039,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 29,
+      "demo": "demo_29",
+      "T": 1194,
+      "achieved": {
+        "park": 328,
+        "lift": 700
+      },
+      "lived": {
+        "park": 325,
+        "lift": null
+      },
+      "details": {
+        "carry": 833
+      },
+      "env_success_frame": 1184,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 30,
+      "demo": "demo_30",
+      "T": 1438,
+      "achieved": {
+        "park": 303,
+        "lift": 722
+      },
+      "lived": {
+        "park": 324,
+        "lift": null
+      },
+      "details": {
+        "carry": 1077
+      },
+      "env_success_frame": 1428,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 31,
+      "demo": "demo_31",
+      "T": 1155,
+      "achieved": {
+        "park": 312,
+        "lift": 673
+      },
+      "lived": {
+        "park": 388,
+        "lift": null
+      },
+      "details": {
+        "carry": 818
+      },
+      "env_success_frame": 1145,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 32,
+      "demo": "demo_32",
+      "T": 1222,
+      "achieved": {
+        "park": 335,
+        "lift": 785
+      },
+      "lived": {
+        "park": 335,
+        "lift": 801
+      },
+      "details": {
+        "carry": 1024
+      },
+      "env_success_frame": 1208,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 33,
+      "demo": "demo_33",
+      "T": 1053,
+      "achieved": {
+        "park": 310,
+        "lift": 731
+      },
+      "lived": {
+        "park": 324,
+        "lift": null
+      },
+      "details": {
+        "carry": 869
+      },
+      "env_success_frame": 1039,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 34,
+      "demo": "demo_34",
+      "T": 1140,
+      "achieved": {
+        "park": 328,
+        "lift": 738
+      },
+      "lived": {
+        "park": 323,
+        "lift": null
+      },
+      "details": {
+        "carry": 928
+      },
+      "env_success_frame": 1130,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 35,
+      "demo": "demo_35",
+      "T": 829,
+      "achieved": {
+        "park": 318,
+        "lift": 605
+      },
+      "lived": {
+        "park": 358,
+        "lift": null
+      },
+      "details": {
+        "carry": 722
+      },
+      "env_success_frame": 819,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 36,
+      "demo": "demo_36",
+      "T": 945,
+      "achieved": {
+        "park": 399,
+        "lift": 671
+      },
+      "lived": {
+        "park": null,
+        "lift": null
+      },
+      "details": {
+        "carry": 800
+      },
+      "env_success_frame": 931,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 37,
+      "demo": "demo_37",
+      "T": 1028,
+      "achieved": {
+        "park": 338,
+        "lift": 661
+      },
+      "lived": {
+        "park": 342,
+        "lift": null
+      },
+      "details": {
+        "carry": 834
+      },
+      "env_success_frame": 1018,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 38,
+      "demo": "demo_38",
+      "T": 1052,
+      "achieved": {
+        "park": 355,
+        "lift": 664
+      },
+      "lived": {
+        "park": 395,
+        "lift": null
+      },
+      "details": {
+        "carry": 852
+      },
+      "env_success_frame": 1038,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 39,
+      "demo": "demo_39",
+      "T": 1001,
+      "achieved": {
+        "park": 333,
+        "lift": 661
+      },
+      "lived": {
+        "park": 351,
+        "lift": null
+      },
+      "details": {
+        "carry": 876
+      },
+      "env_success_frame": 991,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 40,
+      "demo": "demo_40",
+      "T": 1108,
+      "achieved": {
+        "park": 356,
+        "lift": 682
+      },
+      "lived": {
+        "park": 348,
+        "lift": null
+      },
+      "details": {
+        "carry": 870
+      },
+      "env_success_frame": 1082,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 41,
+      "demo": "demo_41",
+      "T": 1008,
+      "achieved": {
+        "park": 311,
+        "lift": 573
+      },
+      "lived": {
+        "park": 316,
+        "lift": null
+      },
+      "details": {
+        "carry": 799
+      },
+      "env_success_frame": 998,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 42,
+      "demo": "demo_42",
+      "T": 1127,
+      "achieved": {
+        "park": 334,
+        "lift": 644
+      },
+      "lived": {
+        "park": 341,
+        "lift": null
+      },
+      "details": {
+        "carry": 831
+      },
+      "env_success_frame": 1112,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 43,
+      "demo": "demo_43",
+      "T": 975,
+      "achieved": {
+        "park": 332,
+        "lift": 649
+      },
+      "lived": {
+        "park": 358,
+        "lift": null
+      },
+      "details": {
+        "carry": 827
+      },
+      "env_success_frame": 965,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 44,
+      "demo": "demo_44",
+      "T": 1093,
+      "achieved": {
+        "park": 343,
+        "lift": 688
+      },
+      "lived": {
+        "park": 346,
+        "lift": null
+      },
+      "details": {
+        "carry": 889
+      },
+      "env_success_frame": 1083,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 45,
+      "demo": "demo_45",
+      "T": 1119,
+      "achieved": {
+        "park": 332,
+        "lift": 654
+      },
+      "lived": {
+        "park": 331,
+        "lift": null
+      },
+      "details": {
+        "carry": 846
+      },
+      "env_success_frame": 1091,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 46,
+      "demo": "demo_46",
+      "T": 1210,
+      "achieved": {
+        "park": 332,
+        "lift": 727
+      },
+      "lived": {
+        "park": 331,
+        "lift": null
+      },
+      "details": {
+        "carry": 984
+      },
+      "env_success_frame": 1200,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 47,
+      "demo": "demo_47",
+      "T": 923,
+      "achieved": {
+        "park": 312,
+        "lift": 590
+      },
+      "lived": {
+        "park": 313,
+        "lift": null
+      },
+      "details": {
+        "carry": 753
+      },
+      "env_success_frame": 903,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 48,
+      "demo": "demo_48",
+      "T": 884,
+      "achieved": {
+        "park": 306,
+        "lift": 566
+      },
+      "lived": {
+        "park": null,
+        "lift": null
+      },
+      "details": {
+        "carry": 732
+      },
+      "env_success_frame": 874,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    },
+    {
+      "episode_index": 49,
+      "demo": "demo_49",
+      "T": 906,
+      "achieved": {
+        "park": 331,
+        "lift": 643
+      },
+      "lived": {
+        "park": 346,
+        "lift": null
+      },
+      "details": {
+        "carry": 803
+      },
+      "env_success_frame": 896,
+      "closing_success_frames": 10,
+      "other_terms_fired": {}
+    }
+  ]
+}

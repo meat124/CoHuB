@@ -1,0 +1,36 @@
+#usda 1.0
+(
+    defaultPrim = "AppleFruit"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "AppleFruit" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+)
+{
+    bool physics:kinematicEnabled = 0
+    float physics:mass = 0.22
+    bool physics:rigidBodyEnabled = 1
+
+    def Xform "Visual" (
+        prepend references = @produce/apple.usda@
+    )
+    {
+        float3 xformOp:scale = (1.5, 1.5, 1.5)
+        uniform token[] xformOpOrder = ["xformOp:scale"]
+    }
+
+    def Sphere "collider" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.06, -0.06, -0.06), (0.06, 0.06, 0.06)]
+        bool physics:collisionEnabled = 1
+        double radius = 0.06
+        token visibility = "invisible"
+        double3 xformOp:translate = (0, 0, 0.0645)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+}
+

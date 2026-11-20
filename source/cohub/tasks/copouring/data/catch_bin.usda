@@ -1,0 +1,139 @@
+#usda 1.0
+(
+    defaultPrim = "CatchBin"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "CatchBin" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+)
+{
+    bool physics:kinematicEnabled = 1
+    float physics:mass = 2
+    bool physics:rigidBodyEnabled = 1
+
+    def Xform "Visual" (
+        prepend references = @polyhaven/plastic_crate_02/plastic_crate_02_1k.usdc@
+    )
+    {
+        float3 xformOp:scale = (1.35, 1.35, 1.35)
+        double3 xformOp:translate = (-0, -0, 0.000021544843912124636)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+
+        over "_materials"
+        {
+            over "plastic_crate_02"
+            {
+                over "Image_Texture"
+                {
+                    asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_diff_1k.jpg@
+                }
+
+                over "Image_Texture_001"
+                {
+                    asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_rough_1k.exr@
+                }
+
+                over "Image_Texture_003"
+                {
+                    asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_opacity_1k.png@
+                }
+
+                over "Image_Texture_002"
+                {
+                    asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_nor_gl_1k.exr@
+                }
+
+                over "NodeGraphs"
+                {
+                    over "bnode__Image_Texture_Color"
+                    {
+                        asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_diff_1k.jpg@
+                    }
+
+                    over "bnode__Image_Texture_001_Color"
+                    {
+                        asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_rough_1k.exr@
+                    }
+
+                    over "bnode__Image_Texture_003_Color"
+                    {
+                        asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_opacity_1k.png@
+                    }
+
+                    over "bnode__Image_Texture_002_Color"
+                    {
+                        asset inputs:file = @polyhaven/plastic_crate_02/textures/plastic_crate_02_nor_gl_1k.exr@
+                    }
+                }
+            }
+        }
+    }
+
+    def Cube "floor" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        bool physics:collisionEnabled = 1
+        double size = 1
+        token visibility = "invisible"
+        float3 xformOp:scale = (0.683, 0.548, 0.011)
+        double3 xformOp:translate = (0, 0, 0.0055)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "wall_y_neg" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        bool physics:collisionEnabled = 1
+        double size = 1
+        token visibility = "invisible"
+        float3 xformOp:scale = (0.647, 0.018, 0.332)
+        double3 xformOp:translate = (0, -0.265, 0.17700000000000002)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "wall_y_pos" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        bool physics:collisionEnabled = 1
+        double size = 1
+        token visibility = "invisible"
+        float3 xformOp:scale = (0.647, 0.018, 0.332)
+        double3 xformOp:translate = (0, 0.265, 0.17700000000000002)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "wall_x_neg" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        bool physics:collisionEnabled = 1
+        double size = 1
+        token visibility = "invisible"
+        float3 xformOp:scale = (0.018, 0.548, 0.332)
+        double3 xformOp:translate = (-0.3325, 0, 0.17700000000000002)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "wall_x_pos" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        bool physics:collisionEnabled = 1
+        double size = 1
+        token visibility = "invisible"
+        float3 xformOp:scale = (0.018, 0.548, 0.332)
+        double3 xformOp:translate = (0.3325, 0, 0.17700000000000002)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+}
+

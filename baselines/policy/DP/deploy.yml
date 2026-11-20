@@ -1,0 +1,31 @@
+# Basic experiment configuration
+policy_name: DP
+protocol: ws
+host: localhost
+port: null
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+action_type: null
+eval_batch: true
+
+checkpoint_num: latest
+
+# Evaluation-time sampler. null keeps what the checkpoint was trained with.
+# `ddim` is a different solver that runs with fewer num_inference_steps.
+inference_scheduler: null      # ddpm | ddim
+num_inference_steps: null      # e.g. 10 with ddim
+
+# Clamp the commanded action to the range the checkpoint's normalizer was fitted on.
+action_clip: fitted            # fitted | None
+
+# Clamp the agent_pos observation to the range the checkpoint's normalizer was fitted on.
+obs_clip: fitted               # fitted | None
+
+# CoHuB decentralized (env_cfg_type=unitree_g1x2_decentralized): ckpt_name is the task.
+# Each robot loads checkpoints/cohub-<task>_robot_<r>-<env_cfg_type>-<action_type>-<seed>.
+# Set these to override the per-robot directory.
+model_dir_robot_a: null
+model_dir_robot_b: null

@@ -1,0 +1,5 @@
+config:
+  robot: g1x3
+  sim: default
+
+gym_id: Isaac-BigTable-G1x3-v0

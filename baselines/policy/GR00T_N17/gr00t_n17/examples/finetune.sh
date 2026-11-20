@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+
+set -x -euo pipefail
+
+NUM_GPUS="${NUM_GPUS:-1}"
+MASTER_PORT="${MASTER_PORT:-29500}"
+SAVE_STEPS="${SAVE_STEPS:-1000}"
+MAX_STEPS="${MAX_STEPS:-10000}"
+USE_WANDB="${USE_WANDB:-1}"
+DATALOADER_NUM_WORKERS="${DATALOADER_NUM_WORKERS:-4}"
+GLOBAL_BATCH_SIZE="${GLOBAL_BATCH_SIZE:-32}"
+SHARD_SIZE="${SHARD_SIZE:-1024}"
+NUM_SHARDS_PER_EPOCH="${NUM_SHARDS_PER_EPOCH:-100000}"
+EPISODE_SAMPLING_RATE="${EPISODE_SAMPLING_RATE:-0.1}"
+TUNE_LLM="${TUNE_LLM:-0}"
+TUNE_VISUAL="${TUNE_VISUAL:-0}"
+SEED="${SEED:-42}"
+GRAD_ACCUM="${GRAD_ACCUM:-1}"
+EVAL_STRATEGY="${EVAL_STRATEGY:-no}"
+EVAL_STEPS="${EVAL_STEPS:-500}"
+EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE:-32}"
+EVAL_MAX_SAMPLES="${EVAL_MAX_SAMPLES:-0}"
+LORA_RANK="${LORA_RANK:-0}"
+LORA_ALPHA="${LORA_ALPHA:-16}"
+LORA_DROPOUT="${LORA_DROPOUT:-0.1}"
+LORA_FULL_MODEL="${LORA_FULL_MODEL:-0}"
+# The stock recipe's optimiser numbers, now overridable so a run can match
+# another baseline's schedule (CoHuB sets pi0.5's: 2.5e-5 peak, 1000 warm-up
+# steps, cosine to 2.5e-6, AdamW 0.9/0.95, wd 1e-10).
+LEARNING_RATE="${LEARNING_RATE:-1e-4}"
+WEIGHT_DECAY="${WEIGHT_DECAY:-1e-5}"
+WARMUP_RATIO="${WARMUP_RATIO:-0.05}"
+WARMUP_STEPS="${WARMUP_STEPS:-0}"
+LR_SCHEDULER_TYPE="${LR_SCHEDULER_TYPE:-cosine}"
+MIN_LR="${MIN_LR:-}"
+ADAM_BETA1="${ADAM_BETA1:-0.9}"
+ADAM_BETA2="${ADAM_BETA2:-0.999}"
+ADAM_EPSILON="${ADAM_EPSILON:-1e-8}"
+MAX_GRAD_NORM="${MAX_GRAD_NORM:-1.0}"
+BASE_MODEL_PATH=""
+DATASET_PATH=""
+MODALITY_CONFIG_PATH=""
+EMBODIMENT_TAG=""
+OUTPUT_DIR=""
+EXPERIMENT_NAME=""
+WANDB_PROJECT="${WANDB_PROJECT:-}"
+STATE_DROPOUT_PROB=""
+EXTRA_ARGS=()
+
+usage() {
+    cat <<'EOF'
+Usage: bash examples/finetune.sh \
+  --base-model-path <path> \
+  --dataset-path <path> \
+  --embodiment-tag <tag> \
+  --output-dir <path> \
+  [--modality-config-path <path>] \
+  [--state-dropout-prob <value>] \
+  [--save-only-model] \
+  [-- <extra launch_finetune.py args>...]
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --base-model-path)
+            BASE_MODEL_PATH="$2"
+            shift 2
+            ;;
+        --dataset-path)
+            DATASET_PATH="$2"
+            shift 2
+            ;;
+        --modality-config-path)
+            MODALITY_CONFIG_PATH="$2"
+            shift 2
+            ;;
+        --embodiment-tag)
+            EMBODIMENT_TAG="$2"
+            shift 2
+            ;;
+        --output-dir)
+            OUTPUT_DIR="$2"
+            shift 2
+            ;;
+        --experiment-name)
+            EXPERIMENT_NAME="$2"
+            shift 2
+            ;;
+        --wandb-project)
+            WANDB_PROJECT="$2"
+            shift 2
+            ;;
+        --state-dropout-prob)
+            STATE_DROPOUT_PROB="$2"
+            shift 2
+            ;;
+        --save-only-model)
+            SAVE_ONLY_MODEL=1
+            shift
+            ;;
+        --help|-h)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            EXTRA_ARGS=("$@")
+            break
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+for required_var in BASE_MODEL_PATH DATASET_PATH EMBODIMENT_TAG OUTPUT_DIR; do
+    if [ -z "${!required_var}" ]; then
+        echo "Missing required argument: ${required_var}" >&2
+        usage >&2
+        exit 1
+    fi
+done
+
+WANDB_FLAG=()
+if [ "$USE_WANDB" = "1" ]; then
+    WANDB_FLAG+=(--use_wandb)
+fi
+
+LAUNCH_CMD=(
+    gr00t/experiment/launch_finetune.py
+    --base_model_path "$BASE_MODEL_PATH"
+    --dataset_path "$DATASET_PATH"
+    --embodiment_tag "$EMBODIMENT_TAG"
+    --num_gpus "$NUM_GPUS"
+    --output_dir "$OUTPUT_DIR"
+    --save_steps "$SAVE_STEPS"
+    --save_total_limit 5
+    --max_steps "$MAX_STEPS"
+    --warmup_ratio "$WARMUP_RATIO"
+    --warmup_steps "$WARMUP_STEPS"
+    --lr_scheduler_type "$LR_SCHEDULER_TYPE"
+    --weight_decay "$WEIGHT_DECAY"
+    --learning_rate "$LEARNING_RATE"
+    --adam_beta1 "$ADAM_BETA1"
+    --adam_beta2 "$ADAM_BETA2"
+    --adam_epsilon "$ADAM_EPSILON"
+    --max_grad_norm "$MAX_GRAD_NORM"
+    "${WANDB_FLAG[@]}"
+    --global_batch_size "$GLOBAL_BATCH_SIZE"
+    --gradient_accumulation_steps "$GRAD_ACCUM"
+    --seed "$SEED"
+    --color_jitter_params brightness 0.3 contrast 0.4 saturation 0.5 hue 0.08
+    --dataloader_num_workers "$DATALOADER_NUM_WORKERS"
+    --shard_size "$SHARD_SIZE"
+    --num_shards_per_epoch "$NUM_SHARDS_PER_EPOCH"
+    --episode_sampling_rate "$EPISODE_SAMPLING_RATE"
+    --eval_strategy "$EVAL_STRATEGY"
+    --eval_steps "$EVAL_STEPS"
+    --eval_batch_size "$EVAL_BATCH_SIZE"
+    --eval_max_samples "$EVAL_MAX_SAMPLES"
+)
+
+if [ -n "$MODALITY_CONFIG_PATH" ]; then
+    LAUNCH_CMD+=(--modality_config_path "$MODALITY_CONFIG_PATH")
+fi
+if [ -n "$EXPERIMENT_NAME" ]; then
+    LAUNCH_CMD+=(--experiment_name "$EXPERIMENT_NAME")
+fi
+if [ -n "$WANDB_PROJECT" ]; then
+    LAUNCH_CMD+=(--wandb_project "$WANDB_PROJECT")
+fi
+
+if [ -n "$MIN_LR" ]; then
+    LAUNCH_CMD+=(--min_lr "$MIN_LR")
+fi
+if [ "$TUNE_LLM" = "1" ]; then
+    LAUNCH_CMD+=(--tune_llm)
+fi
+if [ "$TUNE_VISUAL" = "1" ]; then
+    LAUNCH_CMD+=(--tune_visual)
+fi
+if [ "$LORA_RANK" != "0" ]; then
+    LAUNCH_CMD+=(--lora_rank "$LORA_RANK" --lora_alpha "$LORA_ALPHA" --lora_dropout "$LORA_DROPOUT")
+    if [ "$LORA_FULL_MODEL" = "1" ]; then
+        LAUNCH_CMD+=(--lora_full_model)
+    fi
+fi
+if [ -n "$STATE_DROPOUT_PROB" ]; then
+    LAUNCH_CMD+=(--state_dropout_prob "$STATE_DROPOUT_PROB")
+fi
+if [ -n "${SAVE_ONLY_MODEL:-}" ]; then
+    LAUNCH_CMD+=(--save_only_model)
+fi
+
+if [ "${#EXTRA_ARGS[@]}" -gt 0 ]; then
+    LAUNCH_CMD+=("${EXTRA_ARGS[@]}")
+fi
+
+if [ "$NUM_GPUS" = "1" ]; then
+    # Restrict to a single GPU so HF Trainer doesn't wrap the model in DataParallel,
+    # which crashes with a StopIteration error in the model's device property.
+    export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
+    exec python "${LAUNCH_CMD[@]}"
+fi
+
+exec torchrun --nproc_per_node="$NUM_GPUS" --master_port="$MASTER_PORT" "${LAUNCH_CMD[@]}"

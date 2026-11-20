@@ -1,0 +1,38 @@
+# No trailing slash: these may be symlinks.
+.venv
+.venv-convert
+external
+# Recordings, rendered videos, Hub snapshots and generated dataset cards
+/datasets
+__pycache__/
+*.pyc
+*.egg-info/
+logs/
+# Eval output
+eval_results/
+eval_results_*/
+outputs/
+# Prepared training data, or a link to it
+baselines/data
+# Rendered dataset samples
+/dataset_viz/
+# Local ffmpeg/ffprobe symlinks
+baselines/bin/
+figures/
+# Texture folders that come with a prop download; the baked asset does not read them
+source/cohub/tasks/*/data/sources/textures/
+wandb/
+.ruff_cache/
+# Videos rendered of a task's scene
+rollouts/
+
+# Isaac asset mirror, or a link to it
+/isaac_assets
+# Per-machine settings
+baselines/site.env
+
+# The README figures are tracked
+!docs/figures/
+!docs/figures/*
+
+/ruff.toml

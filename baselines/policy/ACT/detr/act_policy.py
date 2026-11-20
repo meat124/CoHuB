@@ -1,0 +1,316 @@
+import torch.nn as nn
+import os
+import torch
+import numpy as np
+import pickle
+from torch.nn import functional as F
+import torchvision.transforms as transforms
+
+try:
+    from detr.main import (
+        build_ACT_model_and_optimizer,
+        build_CNNMLP_model_and_optimizer,
+    )
+except:
+    from .main import (
+        build_ACT_model_and_optimizer,
+        build_CNNMLP_model_and_optimizer,
+    )
+import IPython
+
+e = IPython.embed
+
+
+class ACTPolicy(nn.Module):
+
+    def __init__(self, args_override, model_cfg=None):
+        super().__init__()
+        model, optimizer = build_ACT_model_and_optimizer(args_override, model_cfg)
+        self.model = model  # CVAE decoder
+        self.optimizer = optimizer
+        self.kl_weight = args_override["kl_weight"]
+
+    def __call__(self, qpos, image, actions=None, is_pad=None):
+        env_state = None
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        image = normalize(image)
+        if actions is not None:  # training time
+            actions = actions[:, :self.model.num_queries]
+            is_pad = is_pad[:, :self.model.num_queries]
+            a_hat, is_pad_hat, (mu, logvar) = self.model(qpos, image, env_state, actions, is_pad)
+            total_kld, dim_wise_kld, mean_kld = kl_divergence(mu, logvar)
+            loss_dict = dict()
+            all_l1 = F.l1_loss(actions, a_hat, reduction="none")
+            l1 = (all_l1 * ~is_pad.unsqueeze(-1)).mean()
+            loss_dict["l1"] = l1
+            loss_dict["kl"] = total_kld[0]
+            loss_dict["loss"] = loss_dict["l1"] + loss_dict["kl"] * self.kl_weight
+            return loss_dict
+        else:  # inference time
+            a_hat, _, (_, _) = self.model(qpos, image, env_state)  # no action, sample from prior
+            return a_hat
+
+    def configure_optimizers(self):
+        return self.optimizer
+
+
+class CNNMLPPolicy(nn.Module):
+
+    def __init__(self, args_override):
+        super().__init__()
+        model, optimizer = build_CNNMLP_model_and_optimizer(args_override)
+        self.model = model  # decoder
+        self.optimizer = optimizer
+
+    def __call__(self, qpos, image, actions=None, is_pad=None):
+        env_state = None  # TODO
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        image = normalize(image)
+        if actions is not None:  # training time
+            actions = actions[:, 0]
+            a_hat = self.model(qpos, image, env_state, actions)
+            mse = F.mse_loss(actions, a_hat)
+            loss_dict = dict()
+            loss_dict["mse"] = mse
+            loss_dict["loss"] = loss_dict["mse"]
+            return loss_dict
+        else:  # inference time
+            a_hat = self.model(qpos, image, env_state)  # no action, sample from prior
+            return a_hat
+
+    def configure_optimizers(self):
+        return self.optimizer
+
+
+def kl_divergence(mu, logvar):
+    batch_size = mu.size(0)
+    assert batch_size != 0
+    if mu.data.ndimension() == 4:
+        mu = mu.view(mu.size(0), mu.size(1))
+    if logvar.data.ndimension() == 4:
+        logvar = logvar.view(logvar.size(0), logvar.size(1))
+
+    klds = -0.5 * (1 + logvar - mu.pow(2) - logvar.exp())
+    total_kld = klds.sum(1).mean(0, True)
+    dimension_wise_kld = klds.mean(0)
+    mean_kld = klds.mean(1).mean(0, True)
+
+    return total_kld, dimension_wise_kld, mean_kld
+
+
+class ACT:
+
+    def __init__(self, args_override=None, model_cfg=None):
+        if args_override is None:
+            args_override = {
+                "kl_weight": 0.1,  # Default value, can be overridden
+                "device": "cuda:0",
+            }
+
+        self.camera_names = model_cfg.camera_names
+
+        self.policy = ACTPolicy(args_override, model_cfg)
+        self.device = torch.device(args_override["device"])
+        self.policy.to(self.device)
+        self.policy.eval()
+
+        # Temporal aggregation settings
+        self.temporal_agg = args_override.get("temporal_agg", False)
+        self.num_queries = args_override["chunk_size"]
+        self.state_dim = model_cfg.action_dim  # Standard joint dimension for bimanual robot
+        self.max_timesteps = 1100  
+
+        # Set query frequency based on temporal_agg - matching imitate_episodes.py logic
+        self.query_frequency = self.num_queries
+        if self.temporal_agg:
+            self.query_frequency = 1
+            # Initialize with zeros matching imitate_episodes.py format
+            self.all_time_actions = torch.zeros([
+                self.max_timesteps,
+                self.max_timesteps + self.num_queries,
+                self.state_dim,
+            ]).to(self.device)
+
+        self.t = 0  # Current timestep
+
+        # Load statistics and policy weights. Missing files are fatal because
+        # running with an unnormalized/randomly initialized ACT policy is invalid.
+        ckpt_dir = args_override.get("ckpt_dir", "")
+        stats_path = os.path.join(ckpt_dir, "dataset_stats.pkl") if ckpt_dir else ""
+        if not ckpt_dir:
+            raise ValueError("ACT requires ckpt_dir during evaluation.")
+        if not os.path.isdir(ckpt_dir):
+            raise FileNotFoundError(f"ACT checkpoint directory not found: {ckpt_dir}")
+
+        if not os.path.isfile(stats_path):
+            raise FileNotFoundError(f"ACT dataset stats not found: {stats_path}")
+        with open(stats_path, "rb") as f:
+            self.stats = pickle.load(f)
+
+        ckpt_path = self._resolve_checkpoint_file(
+            ckpt_dir, args_override.get("checkpoint_num"), args_override.get("seed", 0))
+        self.policy.load_state_dict(torch.load(ckpt_path, map_location=self.device))
+        
+        self.obs_cache = None
+
+    @staticmethod
+    def _resolve_checkpoint_file(ckpt_dir, checkpoint_num, seed):
+        """Which .ckpt to serve -- DP's `checkpoint_num` convention, in epochs.
+
+        imitate_episodes.py writes `policy_epoch_<n>_seed_<s>.ckpt` every
+        save_freq epochs, so the benchmark's per-checkpoint sweep names an epoch.
+        A number that was never written is
+        fatal rather than a silent fall back to the last one, which would score
+        the same weights at every point of the curve.
+        """
+        num = "latest" if checkpoint_num is None else str(checkpoint_num)
+        if num.lower() not in {"", "latest", "none", "best"}:
+            ckpt_path = os.path.join(ckpt_dir, f"policy_epoch_{num}_seed_{seed}.ckpt")
+            if not os.path.isfile(ckpt_path):
+                raise FileNotFoundError(f"ACT checkpoint not found: {ckpt_path}")
+            return ckpt_path
+
+        ckpt_path = os.path.join(ckpt_dir, "policy_best.ckpt")
+        if os.path.isfile(ckpt_path):
+            return ckpt_path
+        # Runs trained before imitate_episodes.py's best-checkpoint save was
+        # restored (it was dead code) only have policy_last.ckpt.
+        last_ckpt_path = os.path.join(ckpt_dir, "policy_last.ckpt")
+        if not os.path.isfile(last_ckpt_path):
+            raise FileNotFoundError(f"ACT policy checkpoint not found: {ckpt_path}")
+        print(f"[ACT] policy_best.ckpt missing under {ckpt_dir}, falling back to policy_last.ckpt")
+        return last_ckpt_path
+
+    def pre_process(self, qpos):
+        """Normalize input joint positions"""
+        if self.stats is not None:
+            return (qpos - self.stats["qpos_mean"]) / self.stats["qpos_std"]
+        return qpos
+
+    def post_process(self, action):
+        """Denormalize model outputs"""
+        if self.stats is not None:
+            return action * self.stats["action_std"] + self.stats["action_mean"]
+        return action
+
+    def update_obs(self, obs):
+        self.obs_cache = obs
+
+    def _prepare_inputs(self):
+        """One query's tensors, from the stored observation.
+
+        Shared by :meth:`get_action` and :meth:`get_action_chunk` so the two
+        cannot drift on normalization or camera order -- they issue the same
+        query and differ only in how much of its result they hand back.
+        """
+        obs = self.obs_cache
+
+        # Convert observations to tensors and normalize qpos - matching imitate_episodes.py
+        qpos_numpy = np.array(obs["qpos"])
+        qpos_normalized = self.pre_process(qpos_numpy)
+        qpos = torch.from_numpy(qpos_normalized).float().to(self.device).unsqueeze(0)
+
+        # Prepare images following imitate_episodes.py pattern
+        # Stack images from all cameras
+        curr_images = []
+        for cam_name in self.camera_names:
+            curr_images.append(obs[cam_name])
+        curr_image = np.stack(curr_images, axis=0)
+        curr_image = torch.from_numpy(curr_image).float().to(self.device).unsqueeze(0)
+        return qpos_numpy, qpos_normalized, qpos, curr_image
+
+    def get_action_chunk(self):
+        """The rest of the current action chunk, in one call.
+
+        Exactly the sequence :meth:`get_action` would return if it were called
+        once per step until the next query: the network runs only at
+        ``t % query_frequency == 0`` and every step in between reads another
+        column of the same ``all_actions``, so returning the remaining columns
+        and advancing ``t`` by that many is the same actions with one round
+        trip instead of N. That is what lets the rollout loop stop shipping a
+        camera observation per step (`utils/rollout.py`).
+
+        Temporal aggregation is not expressible this way: the ensemble for
+        step t mixes chunks predicted at *later* steps, which have not been
+        queried yet. Callers fall back to :meth:`get_action` there -- and
+        `model.py` does, so the chunk is length 1 and the loop keeps observing
+        every step, which is what that mode needs anyway.
+
+        ``t`` advances by the number of actions *issued*, not executed. A
+        caller that stops part way through a chunk and then asks for another
+        would resume at the wrong phase -- which cannot happen in
+        `utils/rollout.py`, where the only early break is the end of the
+        episode and `Model.reset()` puts ``t`` back to 0 before the next one.
+
+        Returns:
+            ``(n, action_dim)`` denormalized actions, ``n >= 1``.
+        """
+        if self.temporal_agg:
+            raise RuntimeError(
+                "get_action_chunk() is undefined under temporal aggregation -- the ensemble for "
+                "each step mixes chunks queried at later steps. Call get_action() once per step."
+            )
+
+        _, _, qpos, curr_image = self._prepare_inputs()
+        with torch.no_grad():
+            if self.t % self.query_frequency == 0:
+                self.all_actions = self.policy(qpos, curr_image)
+            phase = self.t % self.query_frequency
+            raw_actions = self.all_actions[:, phase : self.query_frequency]
+
+        actions = self.post_process(raw_actions.cpu().numpy())[0]
+        self.t += actions.shape[0]
+        return actions
+
+    def get_action(self):
+        qpos_numpy, qpos_normalized, qpos, curr_image = self._prepare_inputs()
+
+        import os
+        if os.environ.get("COHUB_ACT_DEBUG") and self.t % 10 == 0:
+            print(
+                f"[ACT_DEBUG] t={self.t} qpos_norm[min/max/mean]="
+                f"{qpos_normalized.min():.3f}/{qpos_normalized.max():.3f}/{qpos_normalized.mean():.3f} "
+                f"image_shape={tuple(curr_image.shape)} "
+                f"image[min/max/mean]={curr_image.min().item():.3f}/{curr_image.max().item():.3f}/{curr_image.mean().item():.3f}",
+                flush=True,
+            )
+
+        with torch.no_grad():
+            # Only query the policy at specified intervals - exactly like imitate_episodes.py
+            if self.t % self.query_frequency == 0:
+                self.all_actions = self.policy(qpos, curr_image)
+
+            if self.temporal_agg:
+                # Match temporal aggregation exactly from imitate_episodes.py
+                self.all_time_actions[[self.t], self.t:self.t + self.num_queries] = (self.all_actions)
+                actions_for_curr_step = self.all_time_actions[:, self.t]
+                actions_populated = torch.all(actions_for_curr_step != 0, axis=1)
+                actions_for_curr_step = actions_for_curr_step[actions_populated]
+
+                # Use same weighting factor as in imitate_episodes.py
+                k = 0.01
+                exp_weights = np.exp(-k * np.arange(len(actions_for_curr_step)))
+                exp_weights = exp_weights / exp_weights.sum()
+                exp_weights = (torch.from_numpy(exp_weights).to(self.device).unsqueeze(dim=1))
+
+                raw_action = (actions_for_curr_step * exp_weights).sum(dim=0, keepdim=True)
+            else:
+                # Direct action selection, same as imitate_episodes.py
+                raw_action = self.all_actions[:, self.t % self.query_frequency]
+
+        # Denormalize action
+        raw_action = raw_action.cpu().numpy()
+        action = self.post_process(raw_action)
+
+        if os.environ.get("COHUB_ACT_DEBUG") and (self.t - 1) % 10 == 0:
+            qpos_action_delta = action[0, : qpos_numpy.shape[0]] - qpos_numpy if action.shape[1] >= qpos_numpy.shape[0] else None
+            print(
+                f"[ACT_DEBUG] t={self.t - 1} raw_action_norm[min/max/mean]="
+                f"{raw_action.min():.3f}/{raw_action.max():.3f}/{raw_action.mean():.3f} "
+                f"action_denorm[min/max/mean]={action.min():.3f}/{action.max():.3f}/{action.mean():.3f} "
+                + (f"qpos_action_delta[abs max]={np.abs(qpos_action_delta).max():.4f}" if qpos_action_delta is not None else ""),
+                flush=True,
+            )
+
+        self.t += 1
+        return action
